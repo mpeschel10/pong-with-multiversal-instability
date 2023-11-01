@@ -64,45 +64,6 @@ void reshape(int width, int height) {
     glutReshapeWindow(1000, 600);
 }
 
-void keyboard(unsigned char key, int x, int y) {
-    switch (key) {
-    
-    case 'w': 
-        if (p1y1 <= windowHeight - 10) {
-            p1y1 += paddleSpeed;
-            p1y2 += paddleSpeed;
-        }
-        break;
-    case 's':
-        if (p1y2 >= 10) {
-            p1y1 -= paddleSpeed;
-            p1y2 -= paddleSpeed;
-        }
-        break;
-
-    }
-    glutPostRedisplay();
-}
-
-void special(int key, int x, int y) {
-   
-    switch (key) {
-    case GLUT_KEY_UP:
-        if (p2y1 <= windowHeight - 10) {
-            p2y1 += paddleSpeed;
-            p2y2 += paddleSpeed;
-        }
-        break;
-    case GLUT_KEY_DOWN:
-        if (p2y2 >= 10) {
-            p2y1 -= paddleSpeed;
-            p2y2 -= paddleSpeed;
-        }
-        break;
-    }
-    glutPostRedisplay();
-}
-
 void reset() {
     windowWidth = glutGet(GLUT_SCREEN_WIDTH);
     windowHeight = glutGet(GLUT_SCREEN_HEIGHT);
@@ -120,9 +81,23 @@ void reset() {
     ballX = windowWidth / 2.0;
     ballY = windowHeight / 2.0;
 
-    //srand(time(0));
-    ballSpeedX = -0.08;
-    ballSpeedY = 0.08;
+    int rdm = rand() % 4 + 1;
+    if (rdm == 1) {
+        ballSpeedX = -0.08;
+        ballSpeedY = 0.08;
+    }
+    else if (rdm == 2) {
+        ballSpeedX = -0.08;
+        ballSpeedY = -0.08;
+    }
+    else if (rdm == 3) {
+        ballSpeedX = 0.08;
+        ballSpeedY = 0.08;
+    }
+    else {
+        ballSpeedX = 0.08;
+        ballSpeedY = -0.08;
+    }
 }
 
 void idle() {
@@ -152,6 +127,48 @@ void idle() {
     glutPostRedisplay();
 }
 
+void keyboard(unsigned char key, int x, int y) {
+    switch (key) {
+    
+    case 'w': 
+        if (p1y1 <= windowHeight - 10) {
+            p1y1 += paddleSpeed;
+            p1y2 += paddleSpeed;
+        }
+        break;
+    case 's':
+        if (p1y2 >= 10) {
+            p1y1 -= paddleSpeed;
+            p1y2 -= paddleSpeed;
+        }
+        break;
+
+    case 'r':
+        reset();
+        glutIdleFunc(idle);
+        break;
+    }
+    glutPostRedisplay();
+}
+
+void special(int key, int x, int y) {
+   
+    switch (key) {
+    case GLUT_KEY_UP:
+        if (p2y1 <= windowHeight - 10) {
+            p2y1 += paddleSpeed;
+            p2y2 += paddleSpeed;
+        }
+        break;
+    case GLUT_KEY_DOWN:
+        if (p2y2 >= 10) {
+            p2y1 -= paddleSpeed;
+            p2y2 -= paddleSpeed;
+        }
+        break;
+    }
+    glutPostRedisplay();
+}
 
 void init() {
     
@@ -163,6 +180,7 @@ void init() {
     gluOrtho2D(0, windowWidth, 0, windowHeight);
     glMatrixMode(GL_MODELVIEW);
 
+    srand(time(0));
     reset();
     
 }
@@ -184,4 +202,3 @@ int main(int argc, char** argv)
     glutMainLoop();
     return 0;
 }
-
