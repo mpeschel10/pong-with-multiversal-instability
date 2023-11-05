@@ -147,6 +147,10 @@ void keyboard(unsigned char key, int x, int y) {
         reset();
         glutIdleFunc(idle);
         break;
+    
+    case 27:
+        exit(0);
+        break;
     }
     glutPostRedisplay();
 }
