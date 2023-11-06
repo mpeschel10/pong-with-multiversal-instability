@@ -30,7 +30,7 @@ float ballX;
 float ballY;
 float ballSpeedX;
 float ballSpeedY;
-float ballSpeed = 0.10;
+const float ballSpeed = 0.10;
 
 // Scoring
 int player1Score = 0;
@@ -105,7 +105,7 @@ void display() {
     //renderText(score, (windowWidth / 2), (windowHeight - 50));
     renderText(score, 491.0 - scoreLength*12.0, 623.0);
     
-    glFlush();
+    glutSwapBuffers();
 }
 
 void reshape(int width, int height) {
@@ -149,16 +149,16 @@ void reset() {
 
     int rdm = rand() % 4 + 1;
     if (rdm == 1) {
-        rdm = (rand() % 60) + 15;
+        rdm = (rand() % 60) + 15.0;
     }
     else if (rdm == 2) {
-        rdm = (rand() % 60) + 105;
+        rdm = (rand() % 60) + 105.0;
     }
     else if (rdm == 3) {
-        rdm = (rand() % 60) + 195;
+        rdm = (rand() % 60) + 195.0;
     }
     else {
-        rdm = (rand() % 60) + 285;
+        rdm = (rand() % 60) + 285.0;
     }
     ballSpeedX = ballSpeed * cos((rdm * PI / 180.0));
     ballSpeedY = ballSpeed * sin((rdm * PI / 180.0));
@@ -177,14 +177,14 @@ void idle() {
         ballSpeedX = 0.0 - ballSpeedX;
     }
     else if ((ballX + 5 >= windowWidth - 1)) {
-        cout << "Player 1 wins the game" << endl;
+        //cout << "Player 1 wins the game" << endl;
         //reset();
         glutIdleFunc(NULL);
         glutPostRedisplay();
         return;
     }
     else if ((ballX - 5 <= 1)) {
-        cout << "Player 2 wins the game" << endl;
+        //cout << "Player 2 wins the game" << endl;
         //reset();
         glutIdleFunc(NULL);
         glutPostRedisplay();
@@ -271,7 +271,7 @@ void init() {
 int main(int argc, char** argv)
 {
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(1000, 650);
     glutInitWindowPosition(50,50);
     glutCreateWindow("Pong with Multiversal Instability");
@@ -279,6 +279,7 @@ int main(int argc, char** argv)
     init();
 
     glutKeyboardFunc(keyboard);
+    //glutKeyboardUpFunc();
     glutSpecialFunc(special);
     glutReshapeFunc(reshape);
     glutDisplayFunc(display);
