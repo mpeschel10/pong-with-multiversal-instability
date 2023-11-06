@@ -24,8 +24,11 @@ float ballX;
 float ballY;
 float ballSpeedX;
 float ballSpeedY;
+float ballSpeed = 0.08;
 
 const float paddleSpeed = 10.0;
+
+bool isPaused = false;
 
 void display() {
     glClear(GL_COLOR_BUFFER_BIT);
@@ -83,20 +86,20 @@ void reset() {
 
     int rdm = rand() % 4 + 1;
     if (rdm == 1) {
-        ballSpeedX = -0.08;
-        ballSpeedY = 0.08;
+    ballSpeedX = -ballSpeed;
+    ballSpeedY = ballSpeed;
     }
     else if (rdm == 2) {
-        ballSpeedX = -0.08;
-        ballSpeedY = -0.08;
+        ballSpeedX = -ballSpeed;
+        ballSpeedY = -ballSpeed;
     }
     else if (rdm == 3) {
-        ballSpeedX = 0.08;
-        ballSpeedY = 0.08;
+        ballSpeedX = ballSpeed;
+        ballSpeedY = ballSpeed;
     }
     else {
-        ballSpeedX = 0.08;
-        ballSpeedY = -0.08;
+        ballSpeedX = ballSpeed;
+        ballSpeedY = -ballSpeed;
     }
 }
 
@@ -105,9 +108,11 @@ void idle() {
         ballSpeedY = 0.0 - ballSpeedY;
     }
     else if (ballX <= p1x2 && ballX >= p1x1 && ballY >= p1y2 && ballY <= p1y1) {
+        ballX = p1x2;
         ballSpeedX = 0.0 - ballSpeedX;
     }
     else if (ballX >= p2x2 && ballX <= p2x1 && ballY >= p2y2 && ballY <= p2y1) {
+        ballX = p2x2;
         ballSpeedX = 0.0 - ballSpeedX;
     }
     else if ((ballX + 5 >= windowWidth - 1)) {
@@ -146,6 +151,17 @@ void keyboard(unsigned char key, int x, int y) {
     case 'r':
         reset();
         glutIdleFunc(idle);
+        break;
+
+    case 'p':
+        if (isPaused) {
+            isPaused = false;
+            glutIdleFunc(idle);
+        }
+        else {
+            isPaused = true;
+            glutIdleFunc(NULL);
+        }
         break;
     
     case 27:
