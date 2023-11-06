@@ -30,7 +30,7 @@ float ballX;
 float ballY;
 float ballSpeedX;
 float ballSpeedY;
-float ballSpeed = 0.08;
+float ballSpeed = 0.10;
 
 // Scoring
 int player1Score = 0;
