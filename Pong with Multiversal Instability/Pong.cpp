@@ -103,7 +103,7 @@ void display() {
     string score = to_string(player1Score) + " | " + to_string(player2Score);
     int scoreLength = to_string(player1Score).length();
     //renderText(score, (windowWidth / 2), (windowHeight - 50));
-    renderText(score, 491.0 - scoreLength*12.0, 625.0);
+    renderText(score, 491.0 - scoreLength*12.0, 623.0);
     
     glFlush();
 }
