@@ -23,6 +23,8 @@ float p2x1;
 float p2y1;
 float p2x2;
 float p2y2;
+bool isAI = false;
+float p2y;
 
 const float paddleSpeed = 10.0;
 
@@ -189,6 +191,21 @@ void idle() {
     }
     ballX += ballSpeedX;
     ballY += ballSpeedY;
+
+    int rdm = rand() % 175;
+    if (isAI && ballX > (windowWidth / 2.0) && ballSpeedX > 0 && rdm >= 174) { // AI
+        if (ballY >= (p2y + 40) && p2y1 <= windowHeight - 40) {
+            p2y1 += paddleSpeed;
+            p2y2 += paddleSpeed;
+            p2y += paddleSpeed;
+        }
+        else if (ballY <= (p2y - 40) && p2y2 >= 10) {
+            p2y1 -= paddleSpeed;
+            p2y2 -= paddleSpeed;
+            p2y -= paddleSpeed;
+        }
+    }
+    
     glutPostRedisplay();
 }
 
@@ -326,7 +343,7 @@ void titleKeyboard(unsigned char key, int x, int y) {
 void titleMouse(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
         y = windowHeight - y;
-        cout << "Mouse Click | X: " << x << "| Y: " << y << endl;
+        //cout << "Mouse Click | X: " << x << "| Y: " << y << endl;
 
         if ((x >= ((windowWidth / 2.0) - 80)) && (x <= ((windowWidth / 2.0) + 80)) && (y >= 375) && (y <= 425)) {
             init();
@@ -336,10 +353,20 @@ void titleMouse(int button, int state, int x, int y) {
             glutSpecialFunc(special);
             glutDisplayFunc(display);
             glutIdleFunc(idle);
+            isAI = false;
             glutPostRedisplay();
         }
         else if ((x >= ((windowWidth / 2.0) - 70)) && (x <= ((windowWidth / 2.0) + 70)) && (y >= 275) && (y <= 325)) {
             cout << PVE << endl;
+            init();
+            glutMouseFunc(NULL);
+            glutKeyboardFunc(keyboard);
+            //glutKeyboardUpFunc();
+            //glutSpecialFunc(special); // Not needed because AI has control of paddle 2.
+            glutDisplayFunc(display);
+            glutIdleFunc(idle);
+            isAI = true;
+            glutPostRedisplay();
         }
     }
 }
