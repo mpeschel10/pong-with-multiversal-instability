@@ -34,6 +34,7 @@ float ballY;
 float ballSpeedX;
 float ballSpeedY;
 const float ballSpeed = 0.08;
+int speedUp = 0;
 
 // Scoring
 int player1Score = 0;
@@ -168,10 +169,20 @@ void idle() {
     else if (ballX <= p1x2 && ballX >= p1x1 && ballY >= p1y2 && ballY <= p1y1) {
         ballX = p1x2;
         ballSpeedX = 0 - ballSpeedX;
+        speedUp += 1;
+        if (speedUp % 3 == 0) {
+            ballSpeedX *= 1.05;
+            ballSpeedY *= 1.05;
+        }
     }
     else if (ballX >= p2x2 && ballX <= p2x1 && ballY >= p2y2 && ballY <= p2y1) {
         ballX = p2x2;
         ballSpeedX = 0 - ballSpeedX;
+        speedUp += 1;
+        if (speedUp % 3 == 0) {
+            ballSpeedX *= 1.05;
+            ballSpeedY *= 1.05;
+        }
     }
     else if ((ballX + 5 >= windowWidth - 1)) {
         //cout << "Player 1 wins the game" << endl;
