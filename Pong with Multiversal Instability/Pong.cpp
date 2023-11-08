@@ -144,6 +144,7 @@ void reset() {
 
     ballX = windowWidth / 2.0;
     ballY = (windowHeight - 30) / 2.0;
+    speedUp = 0;
 
     int rdm = rand() % 4 + 1;
     if (rdm == 1) {
