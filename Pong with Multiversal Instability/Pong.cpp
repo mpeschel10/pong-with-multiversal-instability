@@ -4,7 +4,6 @@
 #include <math.h>
 #include <string>
 //#include "MenuScreens.cpp" // Originally a separate file for storing the title screen functions. Deprecated because of complexity (for now)
-// test change
 
 #define PI 3.14159265
 
@@ -86,11 +85,11 @@ void display() {
 
     glColor3f(0.5f, 0.5f, 0.5f);
     glRectf((windowWidth / 2.0) - 5, ((windowHeight - 30) / 2.0) - 1, (windowWidth / 2.0) + 5, ((windowHeight - 30) / 2.0) + 1);
-    glRectf((windowWidth / 2.0) - 1, 0, (windowWidth / 2.0) + 1, windowHeight - 31);
+    glRectf((windowWidth / 2.0) - 1, 1, (windowWidth / 2.0) + 1, windowHeight - 31);
     glColor3f(1.0f, 1.0f, 1.0f);
 
     glBegin(GL_LINES); // Draw Play Area
-    
+
     glVertex2i(1, 1);
     glVertex2i(windowWidth - 1, 1);
 
@@ -119,7 +118,7 @@ void display() {
     // Render Score
     string score = to_string(player1Score) + " | " + to_string(player2Score);
     int scoreLength = to_string(player1Score).length();
-    renderText(score, 491.0 - scoreLength*12.0, 606.0);
+    renderText(score, 491.0 - scoreLength * 12.0, 606.0);
 
     glutSwapBuffers();
 }
@@ -130,7 +129,7 @@ void reshape(int width, int height) {
 
 void reset() {
 
-    cout << windowWidth << " | " << windowHeight << endl;
+    //cout << windowWidth << " | " << windowHeight << endl;
 
     p1x1 = 10.0;
     p1y1 = ((windowHeight - 30) / 2.0) + 50.0;
@@ -141,6 +140,7 @@ void reset() {
     p2y1 = ((windowHeight - 30) / 2.0) + 50.0;
     p2x2 = windowWidth - 20.0;
     p2y2 = ((windowHeight - 30) / 2.0) - 50.0;
+    p2y = ((windowHeight - 30) / 2.0);
 
     ballX = windowWidth / 2.0;
     ballY = (windowHeight - 30) / 2.0;
@@ -205,7 +205,7 @@ void idle() {
     ballX += ballSpeedX;
     ballY += ballSpeedY;
 
-    int rdm = rand() % 175;
+    int rdm = (rand() % 175);
     if (isAI && ballX > (windowWidth / 2.0) && ballSpeedX > 0 && rdm >= 174) { // AI
         if (ballY >= (p2y + 40) && p2y1 <= windowHeight - 40) {
             p2y1 += paddleSpeed;
@@ -218,14 +218,13 @@ void idle() {
             p2y -= paddleSpeed;
         }
     }
-    
     glutPostRedisplay();
 }
 
 void keyboard(unsigned char key, int x, int y) {
     switch (key) {
-    
-    case 'w': 
+
+    case 'w':
         if (p1y1 <= windowHeight - 40) {
             p1y1 += paddleSpeed;
             p1y2 += paddleSpeed;
@@ -270,7 +269,7 @@ void keyboard(unsigned char key, int x, int y) {
 }
 
 void special(int key, int x, int y) {
-   
+
     switch (key) {
     case GLUT_KEY_UP:
         if (p2y1 <= windowHeight - 40) {
@@ -290,7 +289,7 @@ void special(int key, int x, int y) {
 
 void init() {
 
-    cout << windowWidth << " | " << windowHeight << endl;
+    //cout << windowWidth << " | " << windowHeight << endl;
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -359,6 +358,7 @@ void titleMouse(int button, int state, int x, int y) {
         //cout << "Mouse Click | X: " << x << "| Y: " << y << endl;
 
         if ((x >= ((windowWidth / 2.0) - 80)) && (x <= ((windowWidth / 2.0) + 80)) && (y >= 375) && (y <= 425)) {
+            cout << PVP << endl;
             init();
             glutMouseFunc(NULL);
             glutKeyboardFunc(keyboard);
