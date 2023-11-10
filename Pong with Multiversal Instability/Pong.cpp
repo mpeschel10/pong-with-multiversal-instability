@@ -13,27 +13,18 @@ const int windowHeight = 630;
 const int windowWidth = 1000;
 
 // Paddle 1
-float p1x1;
-float p1y1;
-float p1x2;
-float p1y2;
+float p1x1, p1y1, p1x2, p1y2;
 
 // Paddle 2
-float p2x1;
-float p2y1;
-float p2x2;
-float p2y2;
+float p2x1, p2y1, p2x2, p2y2;
 bool isAI = false;
 float p2y;
 
 const float paddleSpeed = 10.0;
 
 // Ball
-float ballX;
-float ballY;
-float ballSpeedX;
-float ballSpeedY;
-const float ballSpeed = 0.08;
+float ballX, ballY, ballSpeedX, ballSpeedY;
+const float ballSpeed = 0.8;
 int speedUp = 0;
 
 // Scoring
@@ -45,8 +36,7 @@ bool isPaused = false;
 // Title Screen
 string title;
 int titleLen;
-string PVP;
-string PVE;
+string PVP, PVE;
 
 // Function Initialization
 void titleInit();
