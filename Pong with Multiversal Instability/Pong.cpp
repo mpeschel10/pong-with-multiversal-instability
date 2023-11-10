@@ -6,11 +6,13 @@
 //#include "MenuScreens.cpp" // Originally a separate file for storing the title screen functions. Deprecated because of complexity (for now)
 
 #define PI 3.14159265
+#define TARGET_FPS 2
 
 using namespace std;
 
 const int windowHeight = 630;
 const int windowWidth = 1000;
+const int millisecondsPerFrame = int(1000.0 / TARGET_FPS);
 
 // Paddle 1
 float p1x1, p1y1, p1x2, p1y2;
@@ -43,6 +45,13 @@ void titleInit();
 void titleDisplay();
 void titleMouse(int button, int state, int x, int y);
 void titleKeyboard(unsigned char key, int x, int y);
+
+// Centralize state management in setGameMode function
+// At the moment, this only controls setting state for the timer function, since that's what Mark is working on
+#define MODE_TITLE 2
+#define MODE_VS_PLAYER 0
+#define MODE_VS_AI 1
+static int game_mode = MODE_TITLE;
 
 void renderText(const string& text, float x, float y) {
     // Professor Reza's Render Text Function
@@ -153,6 +162,34 @@ void reset() {
     ballSpeedY = ballSpeed * sin((rdm * PI / 180.0));
 }
 
+void timerVs(int _) {
+    std::cout << "Timer fires " << millisecondsPerFrame << std::endl;
+
+    if (game_mode == MODE_VS_AI || game_mode == MODE_VS_PLAYER) {
+        glutTimerFunc(millisecondsPerFrame, timerVs, _);
+    }
+}
+
+void setGameMode(int mode) {
+    bool modeIsValid = true;
+    switch (mode) {
+        case MODE_VS_AI:
+            glutTimerFunc(millisecondsPerFrame, timerVs, 0);
+            break;
+        case MODE_TITLE:
+            break;
+        case MODE_VS_PLAYER:
+            glutTimerFunc(millisecondsPerFrame, timerVs, 0);
+            break;
+        default:
+            std::cerr << "Warning: setGameMode was called with invalid mode " << mode << std::endl;
+            modeIsValid = false;
+            break;
+    }
+    if (modeIsValid)
+        game_mode = mode;
+}
+
 void idle() {
 
     if ((ballY + 5 >= windowHeight - 31) || (ballY - 5 <= 1)) {
@@ -213,6 +250,13 @@ void idle() {
 
 void keyboard(unsigned char key, int x, int y) {
     switch (key) {
+    
+    case 't':
+        setGameMode(MODE_VS_AI);
+        break;
+    case 'T':
+        setGameMode(MODE_TITLE);
+        break;
 
     case 'w':
         if (p1y1 <= windowHeight - 40) {
@@ -310,9 +354,9 @@ void titleDisplay() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Central Guide Line
-//    glColor3f(0.5f, 0.5f, 0.5f);
-//    glRectf((menuWindowWidth / 2.0) - 1, 0, (menuWindowWidth / 2.0) + 1, menuWindowHeight);
-//    glColor3f(1.0f, 1.0f, 1.0f);
+    //    glColor3f(0.5f, 0.5f, 0.5f);
+    //    glRectf((menuWindowWidth / 2.0) - 1, 0, (menuWindowWidth / 2.0) + 1, menuWindowHeight);
+    //    glColor3f(1.0f, 1.0f, 1.0f);
 
     // Title
     renderText(title, (windowWidth / 2.0) - (titleLen * 15.0), 500.0);
