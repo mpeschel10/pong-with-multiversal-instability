@@ -167,22 +167,19 @@ void reset() {
     //cout << "X: " << ballSpeedX << " | Y: " << ballSpeedY << endl;
 }
 
-void timerVs(int _) {
-    if (game_mode != MODE_VS_AI && game_mode != MODE_VS_PLAYER) {
-        return;
-    }
-    // std::cout << "Timer fires " << millisecondsPerFrame << std::endl;
 
-    idle();
-    
-    glutTimerFunc(millisecondsPerFrame, timerVs, _);
+void timer(int _) {
+    if (game_mode == MODE_VS_AI || game_mode == MODE_VS_PLAYER) {
+        idle();
+    }
+
+    glutTimerFunc(millisecondsPerFrame, timer, _);
 }
 
 void setGameMode(int mode) {
     bool modeIsValid = true;
     switch (mode) {
         case MODE_VS_AI:
-            glutTimerFunc(millisecondsPerFrame, timerVs, 0);
             break;
         case MODE_TITLE:
             // Moved the functionality for resetting to the title screen here (Zach)
@@ -195,7 +192,6 @@ void setGameMode(int mode) {
             glutSpecialFunc(NULL);
             break;
         case MODE_VS_PLAYER:
-            glutTimerFunc(millisecondsPerFrame, timerVs, 0);
             break;
         case MODE_PAUSE:
             break;
@@ -438,6 +434,7 @@ int main(int argc, char** argv)
     glutMouseFunc(titleMouse);
 
     glutReshapeFunc(reshape);
+    glutTimerFunc(0, timer, 0);
     setGameMode(MODE_TITLE);
 
     glutMainLoop();
