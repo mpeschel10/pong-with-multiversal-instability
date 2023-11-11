@@ -138,23 +138,12 @@ void reset() {
     ballY = windowCenterY;
     speedUp = 0;
 
-    int rdm = rand() % 4 + 1;
-    if (rdm == 1) {
-        rdm = (rand() % 60) + 15.0;
-    }
-    else if (rdm == 2) {
-        rdm = (rand() % 60) + 105.0;
-    }
-    else if (rdm == 3) {
-        rdm = (rand() % 60) + 195.0;
-    }
-    else {
-        rdm = (rand() % 60) + 285.0;
-    }
-    //cout << rdm << endl;
-    ballSpeedX = ballSpeed * cos((rdm * PI / 180.0));
-    ballSpeedY = ballSpeed * sin((rdm * PI / 180.0));
-    //cout << "X: " << ballSpeedX << " | Y: " << ballSpeedY << endl;
+    float startAngles[] = {15.0, 105.0, 195.0, 285.0};
+    float degrees = startAngles[rand() % 4] + rand() % 60;
+    float radians = degrees * PI / 180.0;
+
+    ballSpeedX = ballSpeed * cos(radians);
+    ballSpeedY = ballSpeed * sin(radians);
 }
 
 
