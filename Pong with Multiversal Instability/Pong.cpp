@@ -33,8 +33,6 @@ int speedUp = 0;
 int player1Score = 0;
 int player2Score = 0;
 
-bool isPaused = false;
-
 // Title Screen
 string title;
 int titleLen;
@@ -208,9 +206,6 @@ void setGameMode(int mode) {
     }
     if (modeIsValid)
     {
-        if (game_mode == MODE_PAUSE && mode != MODE_PAUSE)
-            // Fix small bug when you pause the game, then reset it, then you have to press pause twice.
-            isPaused = false;
         game_mode = mode;
     }
 }
@@ -310,13 +305,10 @@ void keyboard(unsigned char key, int x, int y) {
         break;
 
     case 'p':
-        if (isPaused) {
-            isPaused = false;
-            setGameMode(isAI ? MODE_VS_AI : MODE_VS_PLAYER);
-        }
-        else {
-            isPaused = true;
+        if (game_mode == MODE_VS_AI || game_mode == MODE_VS_PLAYER) {
             setGameMode(MODE_PAUSE);
+        } else if (game_mode == MODE_PAUSE) {
+            setGameMode(isAI ? MODE_VS_AI : MODE_VS_PLAYER);
         }
         break;
 
