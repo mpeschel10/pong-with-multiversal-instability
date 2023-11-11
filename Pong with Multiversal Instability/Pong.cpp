@@ -5,6 +5,8 @@
 #include <string>
 //#include "MenuScreens.cpp" // Originally a separate file for storing the title screen functions. Deprecated because of complexity (for now)
 
+#include "Paddle.cpp"
+
 #define PI 3.14159265
 #define TARGET_FPS 30
 
@@ -14,9 +16,7 @@ const int windowHeight = 630;
 const int windowWidth = 1000;
 const int millisecondsPerFrame = int(1000.0 / TARGET_FPS);
 
-struct Paddle {
-    float x1,y1, x2,y2;
-} p1 = {}, p2 = {};
+struct Paddle p1 = {}, p2 = {};
 
 bool isAI = false;
 float p2y;
@@ -107,13 +107,9 @@ void display() {
 
     glEnd();
 
-    // Paddle 1
-
-    glRectf(p1.x1, p1.y1, p1.x2, p1.y2);
-
-    // Paddle 2
-
-    glRectf(p2.x1, p2.y1, p2.x2, p2.y2);
+    // Paddles
+    paddleDraw(p1);
+    paddleDraw(p2);
 
     // Ball
     glRectf(ballX - 4, ballY - 4, ballX + 4, ballY + 4);
