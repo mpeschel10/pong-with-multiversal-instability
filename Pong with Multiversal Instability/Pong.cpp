@@ -56,6 +56,10 @@ void titleKeyboard(unsigned char key, int x, int y);
 #define MODE_PAUSE 4
 static int game_mode = MODE_TITLE;
 
+// Track what keys are down for smooth updates.
+bool keyboardDown[255] = {}; // To check for 'a' key, do keyboardDown['a']. Single quote characters are ints in C++
+bool specialDown[255] = {}; // To check for left key, do specialDown[GLUT_KEY_LEFT]
+
 void renderText(const string& text, float x, float y) {
     // Professor Reza's Render Text Function
     glMatrixMode(GL_PROJECTION);
@@ -265,6 +269,7 @@ void idle() {
 }
 
 void keyboard(unsigned char key, int x, int y) {
+    keyboardDown[key] = true;
     switch (key) {
     
     case 'w':
@@ -304,7 +309,11 @@ void keyboard(unsigned char key, int x, int y) {
     glutPostRedisplay();
 }
 
+void keyboardUp(unsigned char key, int x, int y) { keyboardDown[key] = false; }
+
+
 void special(int key, int x, int y) {
+    specialDown[key] = true;
 
     switch (key) {
     case GLUT_KEY_UP:
@@ -322,6 +331,8 @@ void special(int key, int x, int y) {
     }
     glutPostRedisplay();
 }
+
+void specialUp(int key, int x, int y) { specialDown[key] = false; }
 
 void init() {
 
@@ -380,6 +391,7 @@ void titleDisplay() {
 }
 
 void titleKeyboard(unsigned char key, int x, int y) {
+    keyboardDown[key] = true;
     switch (key) {
     case 27:
         exit(0);
@@ -432,6 +444,9 @@ int main(int argc, char** argv)
     glutDisplayFunc(titleDisplay);
     glutKeyboardFunc(titleKeyboard);
     glutMouseFunc(titleMouse);
+    
+    glutSpecialUpFunc(specialUp);
+    glutKeyboardUpFunc(keyboardUp);
 
     glutReshapeFunc(reshape);
     glutTimerFunc(0, timer, 0);
