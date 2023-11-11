@@ -161,8 +161,10 @@ void reset() {
     else {
         rdm = (rand() % 60) + 285.0;
     }
+    //cout << rdm << endl;
     ballSpeedX = ballSpeed * cos((rdm * PI / 180.0));
     ballSpeedY = ballSpeed * sin((rdm * PI / 180.0));
+    //cout << "X: " << ballSpeedX << " | Y: " << ballSpeedY << endl;
 }
 
 void timerVs(int _) {
@@ -183,6 +185,14 @@ void setGameMode(int mode) {
             glutTimerFunc(millisecondsPerFrame, timerVs, 0);
             break;
         case MODE_TITLE:
+            // Moved the functionality for resetting to the title screen here (Zach)
+            player1Score = 0;
+            player2Score = 0;
+            titleInit();
+            glutDisplayFunc(titleDisplay);
+            glutKeyboardFunc(titleKeyboard);
+            glutMouseFunc(titleMouse);
+            glutSpecialFunc(NULL);
             break;
         case MODE_VS_PLAYER:
             glutTimerFunc(millisecondsPerFrame, timerVs, 0);
@@ -242,14 +252,14 @@ void idle() {
     ballX += ballSpeedX;
     ballY += ballSpeedY;
 
-    int rdm = (rand() % 175);
-    if (isAI && ballX > (windowWidth / 2.0) && ballSpeedX > 0 && rdm >= 174) { // AI
-        if (ballY >= (p2y + 40) && p2y1 <= windowHeight - 40) {
+    int rdm = (rand() % 2); // (rand() % 175); && rdm >= 175
+    if (isAI && rdm >= 1 && ballX > (windowWidth / 2.0) && ballSpeedX > 0) { // AI
+        if (ballY >= (p2y + 30) && p2y1 <= windowHeight - 40) {
             p2y1 += paddleSpeed;
             p2y2 += paddleSpeed;
             p2y += paddleSpeed;
         }
-        else if (ballY <= (p2y - 40) && p2y2 >= 10) {
+        else if (ballY <= (p2y - 30) && p2y2 >= 10) {
             p2y1 -= paddleSpeed;
             p2y2 -= paddleSpeed;
             p2y -= paddleSpeed;
@@ -292,13 +302,6 @@ void keyboard(unsigned char key, int x, int y) {
 
     case 27:
         //exit(0);
-        player1Score = 0;
-        player2Score = 0;
-        titleInit();
-        glutDisplayFunc(titleDisplay);
-        glutKeyboardFunc(titleKeyboard);
-        glutMouseFunc(titleMouse);
-        glutSpecialFunc(NULL);
         setGameMode(MODE_TITLE);
         break;
     }
