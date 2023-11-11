@@ -211,6 +211,33 @@ void setGameMode(int mode) {
 }
 
 void idle() {
+    if (keyboardDown['w']) {
+        if (p1y1 <= windowHeight - 40) {
+            p1y1 += paddleSpeed;
+            p1y2 += paddleSpeed;
+        }
+    }
+    if (keyboardDown['s']) {
+        if (p1y2 >= 10) {
+            p1y1 -= paddleSpeed;
+            p1y2 -= paddleSpeed;
+        }
+    }
+
+    if (game_mode == MODE_VS_PLAYER) {
+        if (specialDown[GLUT_KEY_UP]) {
+            if (p2y1 <= windowHeight - 40) {
+                p2y1 += paddleSpeed;
+                p2y2 += paddleSpeed;
+            }
+        }
+        if (specialDown[GLUT_KEY_DOWN]) {
+            if (p2y2 >= 10) {
+                p2y1 -= paddleSpeed;
+                p2y2 -= paddleSpeed;
+            }
+        }
+    }
 
     if ((ballY + 5 >= windowHeight - 31) || (ballY - 5 <= 1)) {
         ballSpeedY = 0.0 - ballSpeedY;
@@ -272,19 +299,6 @@ void keyboard(unsigned char key, int x, int y) {
     keyboardDown[key] = true;
     switch (key) {
     
-    case 'w':
-        if (p1y1 <= windowHeight - 40) {
-            p1y1 += paddleSpeed;
-            p1y2 += paddleSpeed;
-        }
-        break;
-    case 's':
-        if (p1y2 >= 10) {
-            p1y1 -= paddleSpeed;
-            p1y2 -= paddleSpeed;
-        }
-        break;
-
     case 'r':
         reset();
         setGameMode(isAI ? MODE_VS_AI : MODE_VS_PLAYER);
@@ -312,25 +326,7 @@ void keyboard(unsigned char key, int x, int y) {
 void keyboardUp(unsigned char key, int x, int y) { keyboardDown[key] = false; }
 
 
-void special(int key, int x, int y) {
-    specialDown[key] = true;
-
-    switch (key) {
-    case GLUT_KEY_UP:
-        if (p2y1 <= windowHeight - 40) {
-            p2y1 += paddleSpeed;
-            p2y2 += paddleSpeed;
-        }
-        break;
-    case GLUT_KEY_DOWN:
-        if (p2y2 >= 10) {
-            p2y1 -= paddleSpeed;
-            p2y2 -= paddleSpeed;
-        }
-        break;
-    }
-    glutPostRedisplay();
-}
+void special(int key, int x, int y)   { specialDown[key] = true; }
 
 void specialUp(int key, int x, int y) { specialDown[key] = false; }
 
