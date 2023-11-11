@@ -19,7 +19,6 @@ const int millisecondsPerFrame = int(1000.0 / TARGET_FPS);
 struct Paddle p1 = {}, p2 = {};
 
 bool isAI = false;
-float p2y;
 
 const float paddleSpeed = 10.0;
 
@@ -135,8 +134,6 @@ void reset() {
     paddleRightX(p2, windowWidth - 10.0);
     paddleCenterY(p2, windowCenterY);
     
-    p2y = windowCenterY;
-
     ballX = windowWidth / 2.0;
     ballY = windowCenterY;
     speedUp = 0;
@@ -268,13 +265,11 @@ void idle() {
 
     int rdm = (rand() % 2); // (rand() % 175); && rdm >= 175
     if (isAI && rdm >= 1 && ballX > (windowWidth / 2.0) && ballSpeedX > 0) { // AI
-        if (ballY >= (p2y + 30) && p2.y1 <= windowHeight - 40) {
+        if (ballY >= (p2.y1 - 20) && p2.y1 <= windowHeight - 40) {
             paddleMoveY(p2, paddleSpeed);
-            p2y += paddleSpeed;
         }
-        else if (ballY <= (p2y - 30) && p2.y2 >= 10) {
+        else if (ballY <= (p2.y2 + 20) && p2.y2 >= 10) {
             paddleMoveY(p2, -paddleSpeed);
-            p2y -= paddleSpeed;
         }
     }
     glutPostRedisplay();
