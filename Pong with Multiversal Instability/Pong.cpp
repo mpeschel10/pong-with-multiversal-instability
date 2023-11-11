@@ -127,22 +127,18 @@ void reshape(int width, int height) {
 }
 
 void reset() {
+    float windowCenterY = (windowHeight - 30) / 2.0;
+    
+    paddleLeftX(p1, 10.0);
+    paddleCenterY(p1, windowCenterY);
 
-    //cout << windowWidth << " | " << windowHeight << endl;
-
-    p1.x1 = 10.0;
-    p1.y1 = ((windowHeight - 30) / 2.0) + 50.0;
-    p1.x2 = 20.0;
-    p1.y2 = ((windowHeight - 30) / 2.0) - 50.0;
-
-    p2.x1 = windowWidth - 10.0;
-    p2.y1 = ((windowHeight - 30) / 2.0) + 50.0;
-    p2.x2 = windowWidth - 20.0;
-    p2.y2 = ((windowHeight - 30) / 2.0) - 50.0;
-    p2y = ((windowHeight - 30) / 2.0);
+    paddleRightX(p2, windowWidth - 10.0);
+    paddleCenterY(p2, windowCenterY);
+    
+    p2y = windowCenterY;
 
     ballX = windowWidth / 2.0;
-    ballY = (windowHeight - 30) / 2.0;
+    ballY = windowCenterY;
     speedUp = 0;
 
     int rdm = rand() % 4 + 1;
@@ -208,28 +204,24 @@ void setGameMode(int mode) {
 void idle() {
     if (keyboardDown['w']) {
         if (p1.y1 <= windowHeight - 40) {
-            p1.y1 += paddleSpeed;
-            p1.y2 += paddleSpeed;
+            paddleMoveY(p1, paddleSpeed);
         }
     }
     if (keyboardDown['s']) {
         if (p1.y2 >= 10) {
-            p1.y1 -= paddleSpeed;
-            p1.y2 -= paddleSpeed;
+            paddleMoveY(p1, -paddleSpeed);
         }
     }
 
     if (game_mode == MODE_VS_PLAYER) {
         if (specialDown[GLUT_KEY_UP]) {
             if (p2.y1 <= windowHeight - 40) {
-                p2.y1 += paddleSpeed;
-                p2.y2 += paddleSpeed;
+                paddleMoveY(p2, paddleSpeed);
             }
         }
         if (specialDown[GLUT_KEY_DOWN]) {
             if (p2.y2 >= 10) {
-                p2.y1 -= paddleSpeed;
-                p2.y2 -= paddleSpeed;
+                paddleMoveY(p2, -paddleSpeed);
             }
         }
     }
@@ -237,7 +229,7 @@ void idle() {
     if ((ballY + 5 >= windowHeight - 31) || (ballY - 5 <= 1)) {
         ballSpeedY = 0.0 - ballSpeedY;
     }
-    else if (ballX <= p1.x2 && ballX >= p1.x1 && ballY >= p1.y2 && ballY <= p1.y1) {
+    else if (paddleContains(p1, ballX, ballY)) {
         ballX = p1.x2;
         ballSpeedX = 0 - ballSpeedX;
         speedUp += 1;
@@ -246,8 +238,8 @@ void idle() {
             ballSpeedY *= 1.05;
         }
     }
-    else if (ballX >= p2.x2 && ballX <= p2.x1 && ballY >= p2.y2 && ballY <= p2.y1) {
-        ballX = p2.x2;
+    else if (paddleContains(p2, ballX, ballY)) {
+        ballX = p2.x1;
         ballSpeedX = 0 - ballSpeedX;
         speedUp += 1;
         if (speedUp % 3 == 0) {
@@ -277,13 +269,11 @@ void idle() {
     int rdm = (rand() % 2); // (rand() % 175); && rdm >= 175
     if (isAI && rdm >= 1 && ballX > (windowWidth / 2.0) && ballSpeedX > 0) { // AI
         if (ballY >= (p2y + 30) && p2.y1 <= windowHeight - 40) {
-            p2.y1 += paddleSpeed;
-            p2.y2 += paddleSpeed;
+            paddleMoveY(p2, paddleSpeed);
             p2y += paddleSpeed;
         }
         else if (ballY <= (p2y - 30) && p2.y2 >= 10) {
-            p2.y1 -= paddleSpeed;
-            p2.y2 -= paddleSpeed;
+            paddleMoveY(p2, -paddleSpeed);
             p2y -= paddleSpeed;
         }
     }
