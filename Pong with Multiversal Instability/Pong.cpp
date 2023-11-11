@@ -14,11 +14,10 @@ const int windowHeight = 630;
 const int windowWidth = 1000;
 const int millisecondsPerFrame = int(1000.0 / TARGET_FPS);
 
-// Paddle 1
-float p1x1, p1y1, p1x2, p1y2;
+struct Paddle {
+    float x1,y1, x2,y2;
+} p1 = {}, p2 = {};
 
-// Paddle 2
-float p2x1, p2y1, p2x2, p2y2;
 bool isAI = false;
 float p2y;
 
@@ -110,11 +109,11 @@ void display() {
 
     // Paddle 1
 
-    glRectf(p1x1, p1y1, p1x2, p1y2);
+    glRectf(p1.x1, p1.y1, p1.x2, p1.y2);
 
     // Paddle 2
 
-    glRectf(p2x1, p2y1, p2x2, p2y2);
+    glRectf(p2.x1, p2.y1, p2.x2, p2.y2);
 
     // Ball
     glRectf(ballX - 4, ballY - 4, ballX + 4, ballY + 4);
@@ -135,15 +134,15 @@ void reset() {
 
     //cout << windowWidth << " | " << windowHeight << endl;
 
-    p1x1 = 10.0;
-    p1y1 = ((windowHeight - 30) / 2.0) + 50.0;
-    p1x2 = 20.0;
-    p1y2 = ((windowHeight - 30) / 2.0) - 50.0;
+    p1.x1 = 10.0;
+    p1.y1 = ((windowHeight - 30) / 2.0) + 50.0;
+    p1.x2 = 20.0;
+    p1.y2 = ((windowHeight - 30) / 2.0) - 50.0;
 
-    p2x1 = windowWidth - 10.0;
-    p2y1 = ((windowHeight - 30) / 2.0) + 50.0;
-    p2x2 = windowWidth - 20.0;
-    p2y2 = ((windowHeight - 30) / 2.0) - 50.0;
+    p2.x1 = windowWidth - 10.0;
+    p2.y1 = ((windowHeight - 30) / 2.0) + 50.0;
+    p2.x2 = windowWidth - 20.0;
+    p2.y2 = ((windowHeight - 30) / 2.0) - 50.0;
     p2y = ((windowHeight - 30) / 2.0);
 
     ballX = windowWidth / 2.0;
@@ -212,29 +211,29 @@ void setGameMode(int mode) {
 
 void idle() {
     if (keyboardDown['w']) {
-        if (p1y1 <= windowHeight - 40) {
-            p1y1 += paddleSpeed;
-            p1y2 += paddleSpeed;
+        if (p1.y1 <= windowHeight - 40) {
+            p1.y1 += paddleSpeed;
+            p1.y2 += paddleSpeed;
         }
     }
     if (keyboardDown['s']) {
-        if (p1y2 >= 10) {
-            p1y1 -= paddleSpeed;
-            p1y2 -= paddleSpeed;
+        if (p1.y2 >= 10) {
+            p1.y1 -= paddleSpeed;
+            p1.y2 -= paddleSpeed;
         }
     }
 
     if (game_mode == MODE_VS_PLAYER) {
         if (specialDown[GLUT_KEY_UP]) {
-            if (p2y1 <= windowHeight - 40) {
-                p2y1 += paddleSpeed;
-                p2y2 += paddleSpeed;
+            if (p2.y1 <= windowHeight - 40) {
+                p2.y1 += paddleSpeed;
+                p2.y2 += paddleSpeed;
             }
         }
         if (specialDown[GLUT_KEY_DOWN]) {
-            if (p2y2 >= 10) {
-                p2y1 -= paddleSpeed;
-                p2y2 -= paddleSpeed;
+            if (p2.y2 >= 10) {
+                p2.y1 -= paddleSpeed;
+                p2.y2 -= paddleSpeed;
             }
         }
     }
@@ -242,8 +241,8 @@ void idle() {
     if ((ballY + 5 >= windowHeight - 31) || (ballY - 5 <= 1)) {
         ballSpeedY = 0.0 - ballSpeedY;
     }
-    else if (ballX <= p1x2 && ballX >= p1x1 && ballY >= p1y2 && ballY <= p1y1) {
-        ballX = p1x2;
+    else if (ballX <= p1.x2 && ballX >= p1.x1 && ballY >= p1.y2 && ballY <= p1.y1) {
+        ballX = p1.x2;
         ballSpeedX = 0 - ballSpeedX;
         speedUp += 1;
         if (speedUp % 3 == 0) {
@@ -251,8 +250,8 @@ void idle() {
             ballSpeedY *= 1.05;
         }
     }
-    else if (ballX >= p2x2 && ballX <= p2x1 && ballY >= p2y2 && ballY <= p2y1) {
-        ballX = p2x2;
+    else if (ballX >= p2.x2 && ballX <= p2.x1 && ballY >= p2.y2 && ballY <= p2.y1) {
+        ballX = p2.x2;
         ballSpeedX = 0 - ballSpeedX;
         speedUp += 1;
         if (speedUp % 3 == 0) {
@@ -281,14 +280,14 @@ void idle() {
 
     int rdm = (rand() % 2); // (rand() % 175); && rdm >= 175
     if (isAI && rdm >= 1 && ballX > (windowWidth / 2.0) && ballSpeedX > 0) { // AI
-        if (ballY >= (p2y + 30) && p2y1 <= windowHeight - 40) {
-            p2y1 += paddleSpeed;
-            p2y2 += paddleSpeed;
+        if (ballY >= (p2y + 30) && p2.y1 <= windowHeight - 40) {
+            p2.y1 += paddleSpeed;
+            p2.y2 += paddleSpeed;
             p2y += paddleSpeed;
         }
-        else if (ballY <= (p2y - 30) && p2y2 >= 10) {
-            p2y1 -= paddleSpeed;
-            p2y2 -= paddleSpeed;
+        else if (ballY <= (p2y - 30) && p2.y2 >= 10) {
+            p2.y1 -= paddleSpeed;
+            p2.y2 -= paddleSpeed;
             p2y -= paddleSpeed;
         }
     }
