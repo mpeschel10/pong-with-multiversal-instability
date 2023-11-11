@@ -207,7 +207,12 @@ void setGameMode(int mode) {
             break;
     }
     if (modeIsValid)
+    {
+        if (game_mode == MODE_PAUSE && mode != MODE_PAUSE)
+            // Fix small bug when you pause the game, then reset it, then you have to press pause twice.
+            isPaused = false;
         game_mode = mode;
+    }
 }
 
 void idle() {
