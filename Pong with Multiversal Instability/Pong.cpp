@@ -6,7 +6,7 @@
 //#include "MenuScreens.cpp" // Originally a separate file for storing the title screen functions. Deprecated because of complexity (for now)
 
 #define PI 3.14159265
-#define TARGET_FPS 2
+#define TARGET_FPS 30
 
 using namespace std;
 
@@ -26,7 +26,7 @@ const float paddleSpeed = 10.0;
 
 // Ball
 float ballX, ballY, ballSpeedX, ballSpeedY;
-const float ballSpeed = 0.8;
+const float ballSpeed = 8;
 int speedUp = 0;
 
 // Scoring
@@ -43,6 +43,7 @@ string PVP, PVE;
 // Function Initialization
 void titleInit();
 void titleDisplay();
+void idle();
 void titleMouse(int button, int state, int x, int y);
 void titleKeyboard(unsigned char key, int x, int y);
 
@@ -51,6 +52,8 @@ void titleKeyboard(unsigned char key, int x, int y);
 #define MODE_TITLE 2
 #define MODE_VS_PLAYER 0
 #define MODE_VS_AI 1
+#define MODE_WIN_PAUSE 3
+#define MODE_PAUSE 4
 static int game_mode = MODE_TITLE;
 
 void renderText(const string& text, float x, float y) {
@@ -163,11 +166,14 @@ void reset() {
 }
 
 void timerVs(int _) {
-    std::cout << "Timer fires " << millisecondsPerFrame << std::endl;
-
-    if (game_mode == MODE_VS_AI || game_mode == MODE_VS_PLAYER) {
-        glutTimerFunc(millisecondsPerFrame, timerVs, _);
+    if (game_mode != MODE_VS_AI && game_mode != MODE_VS_PLAYER) {
+        return;
     }
+    // std::cout << "Timer fires " << millisecondsPerFrame << std::endl;
+
+    idle();
+    
+    glutTimerFunc(millisecondsPerFrame, timerVs, _);
 }
 
 void setGameMode(int mode) {
@@ -180,6 +186,10 @@ void setGameMode(int mode) {
             break;
         case MODE_VS_PLAYER:
             glutTimerFunc(millisecondsPerFrame, timerVs, 0);
+            break;
+        case MODE_PAUSE:
+            break;
+        case MODE_WIN_PAUSE:
             break;
         default:
             std::cerr << "Warning: setGameMode was called with invalid mode " << mode << std::endl;
@@ -217,7 +227,7 @@ void idle() {
         //cout << "Player 1 wins the game" << endl;
         player1Score += 1;
         //reset();
-        glutIdleFunc(NULL);
+        setGameMode(MODE_WIN_PAUSE);
         glutPostRedisplay();
         return;
     }
@@ -225,7 +235,7 @@ void idle() {
         //cout << "Player 2 wins the game" << endl;
         player2Score += 1;
         //reset();
-        glutIdleFunc(NULL);
+        setGameMode(MODE_WIN_PAUSE);
         glutPostRedisplay();
         return;
     }
@@ -251,13 +261,6 @@ void idle() {
 void keyboard(unsigned char key, int x, int y) {
     switch (key) {
     
-    case 't':
-        setGameMode(MODE_VS_AI);
-        break;
-    case 'T':
-        setGameMode(MODE_TITLE);
-        break;
-
     case 'w':
         if (p1y1 <= windowHeight - 40) {
             p1y1 += paddleSpeed;
@@ -273,17 +276,17 @@ void keyboard(unsigned char key, int x, int y) {
 
     case 'r':
         reset();
-        glutIdleFunc(idle);
+        setGameMode(isAI ? MODE_VS_AI : MODE_VS_PLAYER);
         break;
 
     case 'p':
         if (isPaused) {
             isPaused = false;
-            glutIdleFunc(idle);
+            setGameMode(isAI ? MODE_VS_AI : MODE_VS_PLAYER);
         }
         else {
             isPaused = true;
-            glutIdleFunc(NULL);
+            setGameMode(MODE_PAUSE);
         }
         break;
 
@@ -295,8 +298,8 @@ void keyboard(unsigned char key, int x, int y) {
         glutDisplayFunc(titleDisplay);
         glutKeyboardFunc(titleKeyboard);
         glutMouseFunc(titleMouse);
-        glutIdleFunc(NULL);
         glutSpecialFunc(NULL);
+        setGameMode(MODE_TITLE);
         break;
     }
     glutPostRedisplay();
@@ -399,8 +402,8 @@ void titleMouse(int button, int state, int x, int y) {
             //glutKeyboardUpFunc();
             glutSpecialFunc(special);
             glutDisplayFunc(display);
-            glutIdleFunc(idle);
             isAI = false;
+            setGameMode(MODE_VS_PLAYER);
             glutPostRedisplay();
         }
         else if ((x >= ((windowWidth / 2.0) - 70)) && (x <= ((windowWidth / 2.0) + 70)) && (y >= 275) && (y <= 325)) {
@@ -411,8 +414,8 @@ void titleMouse(int button, int state, int x, int y) {
             //glutKeyboardUpFunc();
             //glutSpecialFunc(special); // Not needed because AI has control of paddle 2.
             glutDisplayFunc(display);
-            glutIdleFunc(idle);
             isAI = true;
+            setGameMode(MODE_VS_AI);
             glutPostRedisplay();
         }
     }
@@ -432,6 +435,7 @@ int main(int argc, char** argv)
     glutMouseFunc(titleMouse);
 
     glutReshapeFunc(reshape);
+    setGameMode(MODE_TITLE);
 
     glutMainLoop();
     return 0;
