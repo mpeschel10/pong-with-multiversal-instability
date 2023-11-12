@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string>
+#include <chrono>
 //#include "MenuScreens.cpp" // Originally a separate file for storing the title screen functions. Deprecated because of complexity (for now)
 
 #include "Paddle.cpp"
@@ -82,6 +83,15 @@ void renderText(const string& text, float x, float y) {
     glPopMatrix();
 }
 
+long now() {
+    return std::chrono::duration_cast< std::chrono::milliseconds >(
+        std::chrono::system_clock::now().time_since_epoch()
+    ).count();
+}
+
+static int frameCount = 0;
+static long lastSecond = now();
+
 void display() {
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -121,6 +131,14 @@ void display() {
     string score = to_string(player1Score) + " | " + to_string(player2Score);
     int scoreLength = to_string(player1Score).length();
     renderText(score, 491.0 - scoreLength * 12.0, 606.0);
+
+    frameCount++;
+    if (now() - lastSecond >= 1000) {
+        printf("FPS: %d  \r", frameCount);
+        std::cout.flush();
+        frameCount = 0;
+        lastSecond = now();
+    }
 
     glutSwapBuffers();
 }
