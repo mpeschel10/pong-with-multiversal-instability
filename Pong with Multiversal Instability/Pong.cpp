@@ -10,6 +10,11 @@
 
 #define PI 3.14159265
 #define TARGET_FPS 30
+static int frameCount = 0;
+static long lastSecond = -1;
+static long lastFrameTime = -1; // In milliseconds
+static long thisFrameTime; // In milliseconds
+static float deltaTime; // In seconds
 
 using namespace std;
 
@@ -89,9 +94,6 @@ long now() {
     ).count();
 }
 
-static int frameCount = 0;
-static long lastSecond = now();
-
 void display() {
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -170,6 +172,9 @@ void reset() {
 
     ballSpeedX = ballSpeed * cos(radians);
     ballSpeedY = ballSpeed * sin(radians);
+
+    lastFrameTime = -1;
+    lastSecond = -1;
 }
 
 
@@ -294,10 +299,15 @@ void updateAI() {
 }
 
 void idle() {
+    thisFrameTime = now();
+    if (lastFrameTime == -1) lastFrameTime = thisFrameTime;
+    deltaTime = (thisFrameTime - lastFrameTime) / 1000.0;
+
     updatePaddles();
     updateBall();
     updateAI();
 
+    lastFrameTime = thisFrameTime;
     glutPostRedisplay();
 }
 
