@@ -16,7 +16,8 @@ const int windowHeight = 630;
 const int windowWidth = 1000;
 const int millisecondsPerFrame = int(1000.0 / TARGET_FPS);
 
-struct Paddle p1 = {}, p2 = {};
+struct Paddle p1, p2;
+struct Bezier2 path1, path2;
 
 bool isAI = false;
 
@@ -110,6 +111,10 @@ void display() {
     paddleDraw(p1);
     paddleDraw(p2);
 
+    // Paddle Paths
+    bezierDraw(path1);
+    bezierDraw(path2);
+
     // Ball
     glRectf(ballX - 4, ballY - 4, ballX + 4, ballY + 4);
 
@@ -144,6 +149,18 @@ void reset() {
 
     ballSpeedX = ballSpeed * cos(radians);
     ballSpeedY = ballSpeed * sin(radians);
+
+    path1 = Bezier2 {
+        Point { 15.0, 1 },
+        Point { 15.0, windowCenterY },
+        Point { 15.0, windowHeight - 31 },
+    };
+
+    path2 = Bezier2 {
+        Point { windowWidth - 15.0, 1 },
+        Point { windowWidth - 15.0, windowCenterY },
+        Point { windowWidth - 15.0, windowHeight - 31 },
+    };
 }
 
 
@@ -271,7 +288,7 @@ void idle() {
     updatePaddles();
     updateBall();
     updateAI();
-    
+
     glutPostRedisplay();
 }
 
@@ -315,6 +332,8 @@ void init() {
     glLoadIdentity();
     gluOrtho2D(0, windowWidth, 0, windowHeight);
     glMatrixMode(GL_MODELVIEW);
+
+    glPointSize(4);
 
     srand(time(0));
     reset();
