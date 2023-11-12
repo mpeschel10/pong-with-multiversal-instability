@@ -17,7 +17,6 @@ const int windowWidth = 1000;
 const int millisecondsPerFrame = int(1000.0 / TARGET_FPS);
 
 struct Paddle p1, p2;
-struct Bezier2 path1, path2;
 
 bool isAI = false;
 
@@ -112,8 +111,8 @@ void display() {
     paddleDraw(p2);
 
     // Paddle Paths
-    bezierDraw(path1);
-    bezierDraw(path2);
+    bezierDraw(p1.path);
+    bezierDraw(p2.path);
 
     // Ball
     glRectf(ballX - 4, ballY - 4, ballX + 4, ballY + 4);
@@ -132,12 +131,16 @@ void reshape(int width, int height) {
 
 void reset() {
     float windowCenterY = (windowHeight - 30) / 2.0;
+    p1.targetSpeed = paddleSpeed;
+    p2.targetSpeed = paddleSpeed;
     
     paddleLeftX(p1, 10.0);
     paddleCenterY(p1, windowCenterY);
+    paddleVerticalPath(p1, 15.0, 1, windowHeight - 31);
 
     paddleRightX(p2, windowWidth - 10.0);
     paddleCenterY(p2, windowCenterY);
+    paddleVerticalPath(p2, windowWidth - 15.0, 1, windowHeight - 31);
     
     ballX = windowWidth / 2.0;
     ballY = windowCenterY;
@@ -149,18 +152,6 @@ void reset() {
 
     ballSpeedX = ballSpeed * cos(radians);
     ballSpeedY = ballSpeed * sin(radians);
-
-    path1 = Bezier2 {
-        Point { 15.0, 1 },
-        Point { 15.0, windowCenterY },
-        Point { 15.0, windowHeight - 31 },
-    };
-
-    path2 = Bezier2 {
-        Point { windowWidth - 15.0, 1 },
-        Point { windowWidth - 15.0, windowCenterY },
-        Point { windowWidth - 15.0, windowHeight - 31 },
-    };
 }
 
 
