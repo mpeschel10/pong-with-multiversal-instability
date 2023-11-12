@@ -70,8 +70,10 @@ void bezierDraw(const struct Bezier2& path) {
 
 struct Paddle {
     float x1,y1, x2,y2;
+
     struct Bezier2 path;
     float targetSpeed, tOffset;
+    float t;
 };
 
 void paddleDraw(const struct Paddle& paddle) {
@@ -94,9 +96,24 @@ void paddleRightX(struct Paddle& paddle, float x) {
     paddle.x1 = paddle.x2 - 10.0;
 }
 
+void paddleCenterX(struct Paddle& paddle, float x) {
+    paddle.x1 = x - 5.0;
+    paddle.x2 = x + 5.0;
+}
+
 void paddleMoveY(struct Paddle& paddle, float paddleSpeed) {
     paddle.y1 += paddleSpeed;
     paddle.y2 += paddleSpeed;
+}
+
+void paddleCenterPoint(struct Paddle& paddle, const struct Point& point) {
+    paddleCenterY(paddle, point.y);
+    paddleCenterX(paddle, point.x);
+}
+
+void paddleMoveT(struct Paddle& paddle, float tOffset) {
+    paddle.t += tOffset;
+    paddleCenterPoint(paddle, bezierInterpolate(paddle.path, paddle.t));
 }
 
 bool paddleContains(const struct Paddle& paddle, float x, float y) {
@@ -115,5 +132,4 @@ void paddleVerticalPath(struct Paddle& paddle, float x, float y0, float y2) {
         Point { x, y2 },
     };
     paddleUpdateTOffset(paddle);
-    std::cout << paddle.tOffset << std::endl;
 }

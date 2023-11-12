@@ -111,8 +111,8 @@ void display() {
     paddleDraw(p2);
 
     // Paddle Paths
-    bezierDraw(p1.path);
-    bezierDraw(p2.path);
+    // bezierDraw(p1.path);
+    // bezierDraw(p2.path);
 
     // Ball
     glRectf(ballX - 4, ballY - 4, ballX + 4, ballY + 4);
@@ -131,8 +131,8 @@ void reshape(int width, int height) {
 
 void reset() {
     float windowCenterY = (windowHeight - 30) / 2.0;
-    p1.targetSpeed = paddleSpeed;
-    p2.targetSpeed = paddleSpeed;
+    p1.targetSpeed = paddleSpeed; p1.t = 0.5;
+    p2.targetSpeed = paddleSpeed; p2.t = 0.5;
     
     paddleLeftX(p1, 10.0);
     paddleCenterY(p1, windowCenterY);
@@ -198,24 +198,24 @@ void setGameMode(int mode) {
 void updatePaddles() {
     if (keyboardDown['w']) {
         if (p1.y1 <= windowHeight - 40) {
-            paddleMoveY(p1, paddleSpeed);
+            paddleMoveT(p1, p2.tOffset);
         }
     }
     if (keyboardDown['s']) {
         if (p1.y2 >= 10) {
-            paddleMoveY(p1, -paddleSpeed);
+            paddleMoveT(p1, -p2.tOffset);
         }
     }
 
     if (game_mode == MODE_VS_PLAYER) {
         if (specialDown[GLUT_KEY_UP]) {
             if (p2.y1 <= windowHeight - 40) {
-                paddleMoveY(p2, paddleSpeed);
+                paddleMoveT(p2, p2.tOffset);
             }
         }
         if (specialDown[GLUT_KEY_DOWN]) {
             if (p2.y2 >= 10) {
-                paddleMoveY(p2, -paddleSpeed);
+                paddleMoveT(p2, -p2.tOffset);
             }
         }
     }
@@ -267,10 +267,10 @@ void updateAI() {
     int rdm = (rand() % 2); // (rand() % 175); && rdm >= 175
     if (isAI && rdm >= 1 && ballX > (windowWidth / 2.0) && ballSpeedX > 0) { // AI
         if (ballY >= (p2.y1 - 20) && p2.y1 <= windowHeight - 40) {
-            paddleMoveY(p2, paddleSpeed);
+            paddleMoveT(p2, p2.tOffset);
         }
         else if (ballY <= (p2.y2 + 20) && p2.y2 >= 10) {
-            paddleMoveY(p2, -paddleSpeed);
+            paddleMoveT(p2, -p2.tOffset);
         }
     }
 }
