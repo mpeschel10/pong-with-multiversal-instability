@@ -9,7 +9,7 @@
 #include "Paddle.cpp"
 
 #define PI 3.14159265
-#define TARGET_FPS 30
+#define TARGET_FPS 60.0
 static int frameCount = 0;
 static long lastSecond = -1;
 static long lastFrameTime = -1; // In milliseconds
@@ -26,11 +26,11 @@ struct Paddle p1, p2;
 
 bool isAI = false;
 
-const float paddleSpeed = 10.0;
+const float paddleSpeed = 300; // in pixels per second
 
 // Ball
 float ballX, ballY, ballSpeedX, ballSpeedY;
-const float ballSpeed = 8;
+const float ballSpeed = 240; // in pixels per second
 int speedUp = 0;
 
 // Scoring
@@ -151,8 +151,10 @@ void reshape(int width, int height) {
 
 void reset() {
     float windowCenterY = (windowHeight - 30) / 2.0;
-    p1.targetSpeed = paddleSpeed; p1.t = 0.5;
-    p2.targetSpeed = paddleSpeed; p2.t = 0.5;
+    // Divide by TARGET_FPS to approximate multiplying by deltaTime.
+    // This is bad, but the Bezeir2 class atm doesn't admit a better solution.
+    p1.targetSpeed = paddleSpeed / TARGET_FPS; p1.t = 0.5;
+    p2.targetSpeed = paddleSpeed / TARGET_FPS; p2.t = 0.5;
     
     paddleLeftX(p1, 10.0);
     paddleCenterY(p1, windowCenterY);
@@ -282,8 +284,8 @@ void updateBall() {
         glutPostRedisplay();
         return;
     }
-    ballX += ballSpeedX;
-    ballY += ballSpeedY;
+    ballX += ballSpeedX * deltaTime;
+    ballY += ballSpeedY * deltaTime;
 }
 
 void updateAI() {
