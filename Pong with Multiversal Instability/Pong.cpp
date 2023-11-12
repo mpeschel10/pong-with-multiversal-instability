@@ -92,17 +92,17 @@ void display() {
 
     glBegin(GL_LINES); // Draw Play Area
 
-    glVertex2i(1, 1);
-    glVertex2i(windowWidth - 1, 1);
+    glVertex2i(1, 0);
+    glVertex2i(windowWidth, 0); // Originally Y1: 1 | X2: windowWidth-1
 
-    glVertex2i(windowWidth - 1, 1);
-    glVertex2i(windowWidth - 1, windowHeight - 31);
+    glVertex2i(windowWidth, 0);
+    glVertex2i(windowWidth, windowHeight - 31);
 
-    glVertex2i(windowWidth - 1, windowHeight - 31);
+    glVertex2i(windowWidth, windowHeight - 31);
     glVertex2i(1, windowHeight - 31);
 
     glVertex2i(1, windowHeight - 31);
-    glVertex2i(1, 1);
+    glVertex2i(1, 0);
 
     glEnd();
 
@@ -202,7 +202,7 @@ void updatePaddles() {
         }
     }
     if (keyboardDown['s']) {
-        if (p1.y2 >= 10) {
+        if (p1.y2 >= 1) {
             paddleMoveT(p1, -p2.tOffset);
         }
     }
@@ -214,7 +214,7 @@ void updatePaddles() {
             }
         }
         if (specialDown[GLUT_KEY_DOWN]) {
-            if (p2.y2 >= 10) {
+            if (p2.y2 >= 1) {
                 paddleMoveT(p2, -p2.tOffset);
             }
         }
@@ -222,7 +222,7 @@ void updatePaddles() {
 }
 
 void updateBall() {
-    if ((ballY + 5 >= windowHeight - 31) || (ballY - 5 <= 1)) {
+    if ((ballY + 5 >= windowHeight - 31) || (ballY - 5 <= 0)) {
         ballSpeedY = 0.0 - ballSpeedY;
     }
     else if (paddleContains(p1, ballX, ballY)) {
@@ -243,7 +243,7 @@ void updateBall() {
             ballSpeedY *= 1.05;
         }
     }
-    else if ((ballX + 5 >= windowWidth - 1)) {
+    else if ((ballX + 5 >= windowWidth)) {
         //cout << "Player 1 wins the game" << endl;
         player1Score += 1;
         //reset();
