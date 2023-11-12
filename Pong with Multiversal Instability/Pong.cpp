@@ -187,7 +187,7 @@ void setGameMode(int mode) {
     }
 }
 
-void idle() {
+void updatePaddles() {
     if (keyboardDown['w']) {
         if (p1.y1 <= windowHeight - 40) {
             paddleMoveY(p1, paddleSpeed);
@@ -211,7 +211,9 @@ void idle() {
             }
         }
     }
+}
 
+void updateBall() {
     if ((ballY + 5 >= windowHeight - 31) || (ballY - 5 <= 1)) {
         ballSpeedY = 0.0 - ballSpeedY;
     }
@@ -251,7 +253,9 @@ void idle() {
     }
     ballX += ballSpeedX;
     ballY += ballSpeedY;
+}
 
+void updateAI() {
     int rdm = (rand() % 2); // (rand() % 175); && rdm >= 175
     if (isAI && rdm >= 1 && ballX > (windowWidth / 2.0) && ballSpeedX > 0) { // AI
         if (ballY >= (p2.y1 - 20) && p2.y1 <= windowHeight - 40) {
@@ -261,6 +265,13 @@ void idle() {
             paddleMoveY(p2, -paddleSpeed);
         }
     }
+}
+
+void idle() {
+    updatePaddles();
+    updateBall();
+    updateAI();
+    
     glutPostRedisplay();
 }
 
