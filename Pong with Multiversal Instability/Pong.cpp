@@ -247,10 +247,13 @@ void updatePaddles() {
 }
 
 void updateBall() {
-    if ((ballY + 5 >= windowHeight - 31) || (ballY - 5 <= 0)) {
-        ballSpeedY = 0.0 - ballSpeedY;
+    if (ballY + 5 >= windowHeight - 31) {
+        ballSpeedY = -abs(ballSpeedY);
+    } else if (ballY - 5 <= 0) {
+        ballSpeedY = abs(ballSpeedY);
     }
-    else if (paddleContains(p1, ballX, ballY)) {
+
+    if (paddleContains(p1, ballX, ballY)) {
         ballX = p1.x2;
         ballSpeedX = 0 - ballSpeedX;
         speedUp += 1;
@@ -268,7 +271,8 @@ void updateBall() {
             ballSpeedY *= 1.05;
         }
     }
-    else if ((ballX + 5 >= windowWidth)) {
+
+    if ((ballX + 5 >= windowWidth)) {
         //cout << "Player 1 wins the game" << endl;
         player1Score += 1;
         //reset();
@@ -284,6 +288,7 @@ void updateBall() {
         glutPostRedisplay();
         return;
     }
+    
     ballX += ballSpeedX * deltaTime;
     ballY += ballSpeedY * deltaTime;
 }
