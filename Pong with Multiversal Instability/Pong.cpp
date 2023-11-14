@@ -5,8 +5,6 @@
 #include <string>
 #include <chrono>
 #include <random>
-//#include "MenuScreens.cpp" // Originally a separate file for storing the title screen functions. Deprecated because of complexity (for now)
-
 #include "Paddle.cpp"
 
 #define PI 3.14159265
@@ -259,7 +257,7 @@ void updatePaddles() {
 
     if (game_mode == MODE_VS_PLAYER || game_mode == MODE_VS_AI) {
         if (keyboardDown['w']) {
-            if (p1.y1 <= windowHeight - 40) {
+            if (p1.y1 <= windowHeight - 31) {
                 paddleMoveT(p1, p2.tOffset);
 
                 if (modifier == MODIF_SUPER) super = true;
@@ -276,7 +274,7 @@ void updatePaddles() {
     
     if (game_mode == MODE_VS_PLAYER) {
         if (specialDown[GLUT_KEY_UP]) {
-            if (p2.y1 <= windowHeight - 40) {
+            if (p2.y1 <= windowHeight - 31) {
                 paddleMoveT(p2, p2.tOffset);
 
                 if (modifier == MODIF_SUPER) super = true;
