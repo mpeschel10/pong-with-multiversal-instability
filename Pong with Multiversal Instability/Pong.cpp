@@ -41,7 +41,7 @@ int player2Score = 0;
 // Title Screen
 string title;
 int titleLen;
-string PVP, PVE;
+string PVP, PVE, EVE;
 
 // Function Initialization
 void titleInit();
@@ -363,7 +363,7 @@ void updateAI() {
             }
         }
 
-        if (ballSpeedX > 0) {
+        if (ballX < (windowWidth / 2.0) && ballSpeedX < 0) {
             if (ballY >= (p1.y1 - 20) && p1.y1 <= windowHeight - 40) {
                 paddleMoveT(p1, p1.tOffset);
             }
@@ -399,6 +399,10 @@ void switchModifier(bool ran) {
     case MODIF_TILT:
         randAngle = rand() % 361;
         break;
+    case MODIF_SUPER:
+        if (isAI == 2) {
+            modifier = MODIF_NONE;
+        }
     }
 }
 
@@ -510,15 +514,16 @@ void titleInit() {
 
     PVP = "Player vs. Player";
     PVE = "Player vs. AI";
+    EVE = "AI vs. AI";
 }
 
 void titleDisplay() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Central Guide Line
-    //    glColor3f(0.5f, 0.5f, 0.5f);
-    //    glRectf((menuWindowWidth / 2.0) - 1, 0, (menuWindowWidth / 2.0) + 1, menuWindowHeight);
-    //    glColor3f(1.0f, 1.0f, 1.0f);
+        glColor3f(0.5f, 0.5f, 0.5f);
+        glRectf((windowWidth / 2.0) - 1, 0, (windowWidth / 2.0) + 1, windowHeight);
+        glColor3f(1.0f, 1.0f, 1.0f);
 
     // Title
     renderText(title, (windowWidth / 2.0) - (titleLen * 15.0), 500.0);
@@ -535,6 +540,12 @@ void titleDisplay() {
     glRectf((windowWidth / 2.0) - 70, 275, (windowWidth / 2.0) + 70, 325);
     glColor3f(1.0f, 1.0f, 1.0f);
     renderText(PVE, (windowWidth / 2.0) - 63, 290.0);
+
+    // Player Vs. AI
+    glColor3f(0.5f, 0.5f, 0.5f);
+    glRectf((windowWidth / 2.0) - 50, 175, (windowWidth / 2.0) + 50, 225);
+    glColor3f(1.0f, 1.0f, 1.0f);
+    renderText(EVE, (windowWidth / 2.0) - 44, 190.0);
 
     glutSwapBuffers();
 }
@@ -571,11 +582,19 @@ void titleMouse(int button, int state, int x, int y) {
             init();
             glutMouseFunc(NULL);
             glutKeyboardFunc(keyboard);
-            //glutKeyboardUpFunc();
-            //glutSpecialFunc(special); // Not needed because AI has control of paddle 2.
             glutDisplayFunc(display);
             isAI = 1;
             setGameMode(MODE_VS_AI);
+            glutPostRedisplay();
+        }
+        else if ((x >= ((windowWidth / 2.0) - 50)) && (x <= ((windowWidth / 2.0) + 50)) && (y >= 175) && (y <= 225)) {
+            cout << EVE << endl;
+            init();
+            glutMouseFunc(NULL);
+            glutKeyboardFunc(keyboard);
+            glutDisplayFunc(display);
+            isAI = 2;
+            setGameMode(MODE_AI_VS_AI);
             glutPostRedisplay();
         }
     }
