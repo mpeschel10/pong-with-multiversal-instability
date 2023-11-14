@@ -4,6 +4,7 @@
 #include <math.h>
 #include <string>
 #include <chrono>
+#include <random>
 //#include "MenuScreens.cpp" // Originally a separate file for storing the title screen functions. Deprecated because of complexity (for now)
 
 #include "Paddle.cpp"
@@ -24,7 +25,7 @@ const int millisecondsPerFrame = int(1000.0 / TARGET_FPS);
 
 struct Paddle p1, p2;
 
-bool isAI = false;
+int isAI = 2;
 
 const float paddleSpeed = 300; // in pixels per second
 
@@ -49,6 +50,12 @@ void idle();
 void titleMouse(int button, int state, int x, int y);
 void titleKeyboard(unsigned char key, int x, int y);
 
+// Modifiers
+int randAngle = rand() % 361;
+float rotateAngle = 0;
+
+bool super = false;
+
 // Centralize state management in setGameMode function
 // At the moment, this only controls setting state for the timer function, since that's what Mark is working on
 #define MODE_TITLE 2
@@ -56,7 +63,16 @@ void titleKeyboard(unsigned char key, int x, int y);
 #define MODE_VS_AI 1
 #define MODE_WIN_PAUSE 3
 #define MODE_PAUSE 4
+#define MODE_AI_VS_AI 5
 static int game_mode = MODE_TITLE;
+
+// Modifier variable
+#define MODIF_NONE 0
+#define MODIF_ROTATE 1
+#define MODIF_TILT 2
+#define MODIF_SUPER 3
+static int modifier = MODIF_NONE;
+const int numModifiers = 4;
 
 // Track what keys are down for smooth updates.
 bool keyboardDown[255] = {}; // To check for 'a' key, do keyboardDown['a']. Single quote characters are ints in C++
@@ -96,6 +112,22 @@ long now() {
 
 void display() {
     glClear(GL_COLOR_BUFFER_BIT);
+    glPushMatrix();
+
+    if (modifier == MODIF_TILT) {
+        glTranslatef((windowWidth / 2), (windowHeight / 2), 0);
+        glRotatef(randAngle, 0.0, 0.0, 1.0);
+        glTranslatef(-(windowWidth / 2), -(windowHeight / 2), 0);
+        glScalef(0.5, 0.5, 1);
+        glTranslatef(windowWidth / 2, windowHeight / 2, 0);
+    }
+    else if (modifier == MODIF_ROTATE) {
+        glTranslatef((windowWidth / 2), (windowHeight / 2), 0);
+        glRotatef(rotateAngle, 0.0, 0.0, 1.0);
+        glTranslatef(-(windowWidth / 2), -(windowHeight / 2), 0);
+        glScalef(0.5, 0.5, 1);
+        glTranslatef(windowWidth / 2, windowHeight / 2, 0);
+    }
 
     glColor3f(0.5f, 0.5f, 0.5f);
     glRectf((windowWidth / 2.0) - 5, ((windowHeight - 30) / 2.0) - 1, (windowWidth / 2.0) + 5, ((windowHeight - 30) / 2.0) + 1);
@@ -142,6 +174,7 @@ void display() {
         lastSecond = now();
     }
 
+    glPopMatrix();
     glutSwapBuffers();
 }
 
@@ -181,7 +214,7 @@ void reset() {
 
 
 void timer(int _) {
-    if (game_mode == MODE_VS_AI || game_mode == MODE_VS_PLAYER) {
+    if (game_mode == MODE_VS_AI || game_mode == MODE_VS_PLAYER || game_mode == MODE_AI_VS_AI) {
         idle();
     }
 
@@ -209,6 +242,8 @@ void setGameMode(int mode) {
             break;
         case MODE_WIN_PAUSE:
             break;
+        case MODE_AI_VS_AI:
+            break;
         default:
             std::cerr << "Warning: setGameMode was called with invalid mode " << mode << std::endl;
             modeIsValid = false;
@@ -221,26 +256,37 @@ void setGameMode(int mode) {
 }
 
 void updatePaddles() {
-    if (keyboardDown['w']) {
-        if (p1.y1 <= windowHeight - 40) {
-            paddleMoveT(p1, p2.tOffset);
-        }
-    }
-    if (keyboardDown['s']) {
-        if (p1.y2 >= 1) {
-            paddleMoveT(p1, -p2.tOffset);
-        }
-    }
 
+    if (game_mode == MODE_VS_PLAYER || game_mode == MODE_VS_AI) {
+        if (keyboardDown['w']) {
+            if (p1.y1 <= windowHeight - 40) {
+                paddleMoveT(p1, p2.tOffset);
+
+                if (modifier == MODIF_SUPER) super = true;
+            }
+        }
+        if (keyboardDown['s']) {
+            if (p1.y2 >= 1) {
+                paddleMoveT(p1, -p2.tOffset);
+
+                if (modifier == MODIF_SUPER) super = true;
+            }
+        }
+    }
+    
     if (game_mode == MODE_VS_PLAYER) {
         if (specialDown[GLUT_KEY_UP]) {
             if (p2.y1 <= windowHeight - 40) {
                 paddleMoveT(p2, p2.tOffset);
+
+                if (modifier == MODIF_SUPER) super = true;
             }
         }
         if (specialDown[GLUT_KEY_DOWN]) {
             if (p2.y2 >= 1) {
                 paddleMoveT(p2, -p2.tOffset);
+
+                if (modifier == MODIF_SUPER) super = true;
             }
         }
     }
@@ -294,14 +340,65 @@ void updateBall() {
 }
 
 void updateAI() {
-    int rdm = (rand() % 2); // (rand() % 175); && rdm >= 175
-    if (isAI && rdm >= 1 && ballX > (windowWidth / 2.0) && ballSpeedX > 0) { // AI
-        if (ballY >= (p2.y1 - 20) && p2.y1 <= windowHeight - 40) {
-            paddleMoveT(p2, p2.tOffset);
+
+    if (isAI == 1) {
+        int rdm = (rand() % 2); // (rand() % 175); && rdm >= 175
+        if (isAI && rdm >= 1 && ballX > (windowWidth / 2.0) && ballSpeedX > 0) { // AI
+            if (ballY >= (p2.y1 - 20) && p2.y1 <= windowHeight - 40) {
+                paddleMoveT(p2, p2.tOffset);
+            }
+            else if (ballY <= (p2.y2 + 20) && p2.y2 >= 10) {
+                paddleMoveT(p2, -p2.tOffset);
+            }
         }
-        else if (ballY <= (p2.y2 + 20) && p2.y2 >= 10) {
-            paddleMoveT(p2, -p2.tOffset);
+    }
+    else if (isAI == 2) {
+
+        if (ballX > (windowWidth / 2.0) && ballSpeedX > 0) { // AI
+            if (ballY >= (p2.y1 - 20) && p2.y1 <= windowHeight - 40) {
+                paddleMoveT(p2, p2.tOffset);
+            }
+            else if (ballY <= (p2.y2 + 20) && p2.y2 >= 10) {
+                paddleMoveT(p2, -p2.tOffset);
+            }
         }
+
+        if (ballSpeedX > 0) {
+            if (ballY >= (p1.y1 - 20) && p1.y1 <= windowHeight - 40) {
+                paddleMoveT(p1, p1.tOffset);
+            }
+            else if (ballY <= (p1.y2 + 20) && p1.y2 >= 10) {
+                paddleMoveT(p1, -p1.tOffset);
+            }
+        }
+
+    }
+}
+
+void updateModifier() {
+    switch (modifier) {
+    case MODIF_ROTATE:
+        rotateAngle += 0.1;
+        break;
+    }
+}
+
+void switchModifier(bool ran) {
+    
+    if (ran) {
+        modifier = rand() % numModifiers;
+    }
+    else {
+        modifier = (modifier + 1) % numModifiers;
+    }
+    
+    switch (modifier) {
+    case MODIF_ROTATE:
+        rotateAngle = 0.0;
+        break;
+    case MODIF_TILT:
+        randAngle = rand() % 361;
+        break;
     }
 }
 
@@ -311,10 +408,17 @@ void idle() {
     deltaTime = (thisFrameTime - lastFrameTime) / 1000.0;
 
     updatePaddles();
-    updateBall();
+
+    if (modifier != MODIF_SUPER || (modifier == MODIF_SUPER && super)) {
+        updateBall();
+        super = false;
+    }
+
     updateAI();
+    updateModifier();
 
     lastFrameTime = thisFrameTime;
+
     glutPostRedisplay();
 }
 
@@ -324,15 +428,41 @@ void keyboard(unsigned char key, int x, int y) {
     
     case 'r':
         reset();
-        setGameMode(isAI ? MODE_VS_AI : MODE_VS_PLAYER);
+        switchModifier(true);
+        switch (isAI) {
+        case 0:
+            setGameMode(MODE_VS_PLAYER);
+            break;
+        case 1:
+            setGameMode(MODE_VS_AI);
+            break;
+        case 2:
+            setGameMode(MODE_AI_VS_AI);
+            break;
+        };
+
         break;
 
     case 'p':
-        if (game_mode == MODE_VS_AI || game_mode == MODE_VS_PLAYER) {
+        if (game_mode == MODE_VS_AI || game_mode == MODE_VS_PLAYER || game_mode == MODE_AI_VS_AI) {
             setGameMode(MODE_PAUSE);
         } else if (game_mode == MODE_PAUSE) {
-            setGameMode(isAI ? MODE_VS_AI : MODE_VS_PLAYER);
+            switch (isAI) {
+            case 0:
+                setGameMode(MODE_VS_PLAYER);
+                break;
+            case 1:
+                setGameMode(MODE_VS_AI);
+                break;
+            case 2:
+                setGameMode(MODE_AI_VS_AI);
+                break;
+            };
         }
+        break;
+
+    case 'm':
+        switchModifier(false);
         break;
 
     case 27:
@@ -431,7 +561,7 @@ void titleMouse(int button, int state, int x, int y) {
             //glutKeyboardUpFunc();
             glutSpecialFunc(special);
             glutDisplayFunc(display);
-            isAI = false;
+            isAI = 0;
             setGameMode(MODE_VS_PLAYER);
             glutPostRedisplay();
         }
@@ -443,7 +573,7 @@ void titleMouse(int button, int state, int x, int y) {
             //glutKeyboardUpFunc();
             //glutSpecialFunc(special); // Not needed because AI has control of paddle 2.
             glutDisplayFunc(display);
-            isAI = true;
+            isAI = 1;
             setGameMode(MODE_VS_AI);
             glutPostRedisplay();
         }
