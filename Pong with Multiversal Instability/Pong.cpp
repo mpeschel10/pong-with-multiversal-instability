@@ -467,6 +467,7 @@ void keyboard(unsigned char key, int x, int y) {
 
     case 27:
         //exit(0);
+        modifier = MODIF_NONE;
         setGameMode(MODE_TITLE);
         break;
     }
