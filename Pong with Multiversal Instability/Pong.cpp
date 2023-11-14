@@ -38,17 +38,16 @@ int speedUp = 0;
 int player1Score = 0;
 int player2Score = 0;
 
-// Title Screen
-string title;
-int titleLen;
-string PVP, PVE, EVE;
-
-// Function Initialization
-void titleInit();
-void titleDisplay();
+// - Function Initialization -
+// Primarily used by MenuScreens.cpp to prevent errors
 void idle();
-void titleMouse(int button, int state, int x, int y);
-void titleKeyboard(unsigned char key, int x, int y);
+void renderText(const string& text, float x, float y);
+void setGameMode(int mode);
+void init();
+void display();
+void keyboard(unsigned char key, int x, int y);
+void special(int key, int x, int y);
+
 
 // Modifiers
 int randAngle = rand() % 361;
@@ -77,6 +76,8 @@ const int numModifiers = 4;
 // Track what keys are down for smooth updates.
 bool keyboardDown[255] = {}; // To check for 'a' key, do keyboardDown['a']. Single quote characters are ints in C++
 bool specialDown[255] = {}; // To check for left key, do specialDown[GLUT_KEY_LEFT]
+
+#include "MenuScreens.cpp" //Reimplemented MenuScreens.cpp for the Title and Settings screen stuff
 
 void renderText(const string& text, float x, float y) {
     // Professor Reza's Render Text Function
@@ -211,7 +212,6 @@ void reset() {
     lastFrameTime = -1;
     lastSecond = -1;
 }
-
 
 void timer(int _) {
     if (game_mode == MODE_VS_AI || game_mode == MODE_VS_PLAYER || game_mode == MODE_AI_VS_AI) {
@@ -480,7 +480,6 @@ void keyboard(unsigned char key, int x, int y) {
 
 void keyboardUp(unsigned char key, int x, int y) { keyboardDown[key] = false; }
 
-
 void special(int key, int x, int y)   { specialDown[key] = true; }
 
 void specialUp(int key, int x, int y) { specialDown[key] = false; }
@@ -499,105 +498,6 @@ void init() {
     srand(time(0));
     reset();
 
-}
-
-// -- Title Screen Functions --
-
-void titleInit() {
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluOrtho2D(0, windowWidth, 0, windowHeight);
-    glMatrixMode(GL_MODELVIEW);
-
-    title = "PONG WITH MULTIVERSAL INSTABILITY";
-    titleLen = title.length() / 2.0;
-
-    PVP = "Player vs. Player";
-    PVE = "Player vs. AI";
-    EVE = "AI vs. AI";
-}
-
-void titleDisplay() {
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    // Central Guide Line
-        glColor3f(0.5f, 0.5f, 0.5f);
-        glRectf((windowWidth / 2.0) - 1, 0, (windowWidth / 2.0) + 1, windowHeight);
-        glColor3f(1.0f, 1.0f, 1.0f);
-
-    // Title
-    renderText(title, (windowWidth / 2.0) - (titleLen * 15.0), 500.0);
-
-    // Player Vs. Player
-    glColor3f(0.5f, 0.5f, 0.5f);
-    glRectf((windowWidth / 2.0) - 85, 375, (windowWidth / 2.0) + 85, 425);
-    glColor3f(1.0f, 1.0f, 1.0f);
-    renderText(PVP, (windowWidth / 2.0) - 80, 390.0);
-
-
-    // Player Vs. AI
-    glColor3f(0.5f, 0.5f, 0.5f);
-    glRectf((windowWidth / 2.0) - 70, 275, (windowWidth / 2.0) + 70, 325);
-    glColor3f(1.0f, 1.0f, 1.0f);
-    renderText(PVE, (windowWidth / 2.0) - 63, 290.0);
-
-    // Player Vs. AI
-    glColor3f(0.5f, 0.5f, 0.5f);
-    glRectf((windowWidth / 2.0) - 50, 175, (windowWidth / 2.0) + 50, 225);
-    glColor3f(1.0f, 1.0f, 1.0f);
-    renderText(EVE, (windowWidth / 2.0) - 44, 190.0);
-
-    glutSwapBuffers();
-}
-
-void titleKeyboard(unsigned char key, int x, int y) {
-    keyboardDown[key] = true;
-    switch (key) {
-    case 27:
-        exit(0);
-        break;
-    }
-    glutPostRedisplay();
-}
-
-void titleMouse(int button, int state, int x, int y) {
-    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-        y = windowHeight - y;
-        //cout << "Mouse Click | X: " << x << "| Y: " << y << endl;
-
-        if ((x >= ((windowWidth / 2.0) - 80)) && (x <= ((windowWidth / 2.0) + 80)) && (y >= 375) && (y <= 425)) {
-            cout << PVP << endl;
-            init();
-            glutMouseFunc(NULL);
-            glutKeyboardFunc(keyboard);
-            //glutKeyboardUpFunc();
-            glutSpecialFunc(special);
-            glutDisplayFunc(display);
-            isAI = 0;
-            setGameMode(MODE_VS_PLAYER);
-            glutPostRedisplay();
-        }
-        else if ((x >= ((windowWidth / 2.0) - 70)) && (x <= ((windowWidth / 2.0) + 70)) && (y >= 275) && (y <= 325)) {
-            cout << PVE << endl;
-            init();
-            glutMouseFunc(NULL);
-            glutKeyboardFunc(keyboard);
-            glutDisplayFunc(display);
-            isAI = 1;
-            setGameMode(MODE_VS_AI);
-            glutPostRedisplay();
-        }
-        else if ((x >= ((windowWidth / 2.0) - 50)) && (x <= ((windowWidth / 2.0) + 50)) && (y >= 175) && (y <= 225)) {
-            cout << EVE << endl;
-            init();
-            glutMouseFunc(NULL);
-            glutKeyboardFunc(keyboard);
-            glutDisplayFunc(display);
-            isAI = 2;
-            setGameMode(MODE_AI_VS_AI);
-            glutPostRedisplay();
-        }
-    }
 }
 
 int main(int argc, char** argv)
