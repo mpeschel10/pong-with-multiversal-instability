@@ -238,7 +238,7 @@ void setGameMode(int mode) {
         case MODE_VS_PLAYER:
             break;
         case MODE_PAUSE:
-            lastFrameTime = now();
+            lastFrameTime = -1;
             break;
         case MODE_WIN_PAUSE:
             break;
