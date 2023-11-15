@@ -179,7 +179,7 @@ void display() {
 
 void reshape(int width, int height) {
     glutReshapeWindow(windowWidth, windowHeight);
-    lastFrameTime = now();
+    lastFrameTime = -1;
 }
 
 void reset() {
