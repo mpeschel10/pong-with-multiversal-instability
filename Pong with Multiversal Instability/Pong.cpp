@@ -50,6 +50,8 @@ void special(int key, int x, int y);
 // Modifiers
 int randAngle = rand() % 361;
 float rotateAngle = 0;
+float xScale = 1.0;
+float yScale = 1.0;
 
 bool super = false;
 
@@ -68,8 +70,9 @@ static int game_mode = MODE_TITLE;
 #define MODIF_ROTATE 1
 #define MODIF_TILT 2
 #define MODIF_SUPER 3
+#define MODIF_SCALE 4
 static int modifier = MODIF_NONE;
-const int numModifiers = 4;
+const int numModifiers = 5;
 
 // Track what keys are down for smooth updates.
 bool keyboardDown[255] = {}; // To check for 'a' key, do keyboardDown['a']. Single quote characters are ints in C++
@@ -127,11 +130,22 @@ void display() {
         glScalef(0.5, 0.5, 1);
         glTranslatef(windowWidth / 2, windowHeight / 2, 0);
     }
+    else if (modifier == MODIF_SCALE) {
+        float xOffset = ((windowWidth * (1 - xScale)) / 2.0);
+        float yOffset = (((windowHeight - 30) * (1 - yScale)) / 2.0);
+        glTranslatef(xOffset, yOffset, 0);
+        glScalef(xScale, yScale, 1);
+    }
+
+    // Play Area Background Color (?)
+    //glColor3f(0.0f, 1.0f, 1.0f);
+    //glRectf(0, 0, windowWidth, windowHeight - 30);
 
     glColor3f(0.5f, 0.5f, 0.5f);
     glRectf((windowWidth / 2.0) - 5, ((windowHeight - 30) / 2.0) - 1, (windowWidth / 2.0) + 5, ((windowHeight - 30) / 2.0) + 1);
     glRectf((windowWidth / 2.0) - 1, 1, (windowWidth / 2.0) + 1, windowHeight - 31);
     glColor3f(1.0f, 1.0f, 1.0f);
+    
 
     glBegin(GL_LINES); // Draw Play Area
 
@@ -403,7 +417,15 @@ void switchModifier(bool ran) {
         if (isAI == 2) {
             modifier = MODIF_NONE;
         }
+        break;
+    case MODIF_SCALE:
+        float randVal = (rand() % 50) + 51;
+        xScale = (randVal / 100.0);
+        randVal = (rand() % 50) + 51;
+        yScale = (randVal / 100.0);
+        break;
     }
+    cout << modifier << endl;
 }
 
 void idle() {
