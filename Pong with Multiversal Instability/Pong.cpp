@@ -53,6 +53,10 @@ float rotateAngle = 0;
 float xScale = 1.0;
 float yScale = 1.0;
 float scaleAngle = 0.0;
+float windowPosX = 0.0;
+float windowPosY = 0.0;
+float xBefore = 0.0;
+float yBefore = 0.0;
 
 bool super = false;
 
@@ -74,6 +78,7 @@ static int game_mode = MODE_TITLE;
 #define MODIF_SCALE 4
 #define MODIF_WOOZY 5
 #define MODIF_DIZZY 6
+#define MODIF_STABLE 7
 static int modifier = MODIF_NONE;
 const int numModifiers = 7;
 
@@ -351,7 +356,8 @@ void updateBall() {
         glutPostRedisplay();
         return;
     }
-    
+    xBefore = ballX;
+    yBefore = ballY;
     ballX += ballSpeedX * deltaTime;
     ballY += ballSpeedY * deltaTime;
 }
@@ -411,6 +417,12 @@ void updateModifier() {
             scaleAngle = 0.0;
         xScale = (cos(scaleAngle) / 4.0) + 0.75;
         yScale = (sin(scaleAngle) / 4.0) + 0.75;
+        break;
+    case MODIF_STABLE:
+        windowPosX -= (ballX - xBefore);
+        windowPosY += (ballY - yBefore);
+        glutPositionWindow(windowPosX, windowPosY); // (?)
+        break;
     }
 }
 
@@ -450,6 +462,9 @@ void switchModifier(bool ran) {
         xScale = 1.0;
         yScale = 1.0;
         break;
+    case MODIF_STABLE:
+        windowPosX = glutGet((GLenum)GLUT_WINDOW_X);
+        windowPosY = glutGet((GLenum)GLUT_WINDOW_Y);
     }
     cout << modifier << endl;
 }
