@@ -179,6 +179,7 @@ void display() {
 
 void reshape(int width, int height) {
     glutReshapeWindow(windowWidth, windowHeight);
+    lastFrameTime = now();
 }
 
 void reset() {
@@ -237,7 +238,7 @@ void setGameMode(int mode) {
         case MODE_VS_PLAYER:
             break;
         case MODE_PAUSE:
-            lastFrameTime = -1;
+            lastFrameTime = now();
             break;
         case MODE_WIN_PAUSE:
             break;
@@ -354,19 +355,19 @@ void updateAI() {
     else if (isAI == 2) {
 
         if (ballX > (windowWidth / 2.0) && ballSpeedX > 0) { // AI
-            if (ballY >= (p2.y1 - 20) && p2.y1 <= windowHeight - 40) {
+            if (ballY >= (p2.y1 - 45) && p2.y1 <= windowHeight - 31) {
                 paddleMoveT(p2, p2.tOffset);
             }
-            else if (ballY <= (p2.y2 + 20) && p2.y2 >= 10) {
+            else if (ballY <= (p2.y2 + 45) && p2.y2 >= 1) {
                 paddleMoveT(p2, -p2.tOffset);
             }
         }
 
         if (ballX < (windowWidth / 2.0) && ballSpeedX < 0) {
-            if (ballY >= (p1.y1 - 20) && p1.y1 <= windowHeight - 40) {
+            if (ballY >= (p1.y1 - 45) && p1.y1 <= windowHeight - 31) {
                 paddleMoveT(p1, p1.tOffset);
             }
-            else if (ballY <= (p1.y2 + 20) && p1.y2 >= 10) {
+            else if (ballY <= (p1.y2 + 45) && p1.y2 >= 1) {
                 paddleMoveT(p1, -p1.tOffset);
             }
         }
