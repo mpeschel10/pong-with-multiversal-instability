@@ -52,6 +52,7 @@ int randAngle = rand() % 361;
 float rotateAngle = 0;
 float xScale = 1.0;
 float yScale = 1.0;
+float scaleAngle = 0.0;
 
 bool super = false;
 
@@ -71,8 +72,10 @@ static int game_mode = MODE_TITLE;
 #define MODIF_TILT 2
 #define MODIF_SUPER 3
 #define MODIF_SCALE 4
+#define MODIF_WOOZY 5
+#define MODIF_DIZZY 6
 static int modifier = MODIF_NONE;
-const int numModifiers = 5;
+const int numModifiers = 7;
 
 // Track what keys are down for smooth updates.
 bool keyboardDown[255] = {}; // To check for 'a' key, do keyboardDown['a']. Single quote characters are ints in C++
@@ -123,14 +126,14 @@ void display() {
         glScalef(0.5, 0.5, 1);
         glTranslatef(windowWidth / 2, windowHeight / 2, 0);
     }
-    else if (modifier == MODIF_ROTATE) {
+    else if (modifier == MODIF_ROTATE || modifier == MODIF_DIZZY) {
         glTranslatef((windowWidth / 2), (windowHeight / 2), 0);
         glRotatef(rotateAngle, 0.0, 0.0, 1.0);
         glTranslatef(-(windowWidth / 2), -(windowHeight / 2), 0);
         glScalef(0.5, 0.5, 1);
         glTranslatef(windowWidth / 2, windowHeight / 2, 0);
     }
-    else if (modifier == MODIF_SCALE) {
+    if (modifier == MODIF_SCALE || modifier == MODIF_WOOZY || modifier == MODIF_DIZZY) {
         float xOffset = ((windowWidth * (1 - xScale)) / 2.0);
         float yOffset = (((windowHeight - 30) * (1 - yScale)) / 2.0);
         glTranslatef(xOffset, yOffset, 0);
@@ -394,11 +397,25 @@ void updateModifier() {
     case MODIF_ROTATE:
         rotateAngle += 0.1;
         break;
+    case MODIF_WOOZY:
+        scaleAngle += 0.025;
+        if (scaleAngle >= 360) 
+            scaleAngle = 0.0;
+        xScale = (cos(scaleAngle) / 4.0) + 0.75;
+        yScale = (sin(scaleAngle) / 4.0) + 0.75;
+        break;
+    case MODIF_DIZZY:
+        rotateAngle += 0.1;
+        scaleAngle += 0.025;
+        if (scaleAngle >= 360)
+            scaleAngle = 0.0;
+        xScale = (cos(scaleAngle) / 4.0) + 0.75;
+        yScale = (sin(scaleAngle) / 4.0) + 0.75;
     }
 }
 
 void switchModifier(bool ran) {
-    
+    float randVal;
     if (ran) {
         modifier = rand() % numModifiers;
     }
@@ -419,10 +436,19 @@ void switchModifier(bool ran) {
         }
         break;
     case MODIF_SCALE:
-        float randVal = (rand() % 50) + 51;
+        randVal = (rand() % 50) + 51;
         xScale = (randVal / 100.0);
         randVal = (rand() % 50) + 51;
         yScale = (randVal / 100.0);
+        break;
+    case MODIF_WOOZY:
+        xScale = 1.0;
+        yScale = 1.0;
+        break;
+    case MODIF_DIZZY:
+        rotateAngle = 0.0;
+        xScale = 1.0;
+        yScale = 1.0;
         break;
     }
     cout << modifier << endl;
