@@ -80,7 +80,7 @@ static int game_mode = MODE_TITLE;
 #define MODIF_DIZZY 6
 #define MODIF_STABLE 7
 static int modifier = MODIF_NONE;
-const int numModifiers = 7;
+const int numModifiers = 8;
 
 // Track what keys are down for smooth updates.
 bool keyboardDown[255] = {}; // To check for 'a' key, do keyboardDown['a']. Single quote characters are ints in C++
@@ -232,6 +232,7 @@ void reset() {
 
     lastFrameTime = -1;
     lastSecond = -1;
+    glutPositionWindow(200, 100);
 }
 
 void timer(int _) {
@@ -568,7 +569,7 @@ int main(int argc, char** argv)
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(windowWidth, windowHeight);
-    glutInitWindowPosition(50, 50);
+    glutInitWindowPosition(200, 100);
     glutCreateWindow("Pong with Multiversal Instability");
 
     titleInit();
