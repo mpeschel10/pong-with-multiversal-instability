@@ -1,3 +1,4 @@
+#include <GL/glew.h> // Important that this is included before glut.h
 #include <GL/glut.h>
 #include <iostream>
 #include <stdlib.h>
@@ -6,6 +7,7 @@
 #include <chrono>
 #include <random>
 #include "Paddle.cpp"
+#include "Texture.cpp"
 
 #define PI 3.14159265
 #define TARGET_FPS 60.0
@@ -571,6 +573,7 @@ int main(int argc, char** argv)
     glutInitWindowSize(windowWidth, windowHeight);
     glutInitWindowPosition(200, 100);
     glutCreateWindow("Pong with Multiversal Instability");
+    glewInit();
 
     titleInit();
     glutDisplayFunc(titleDisplay);
@@ -583,6 +586,9 @@ int main(int argc, char** argv)
     glutReshapeFunc(reshape);
     glutTimerFunc(0, timer, 0);
     setGameMode(MODE_TITLE);
+
+    TexturedRectangle background_title;
+    background_title.init("bg.png");
 
     glutMainLoop();
     return 0;
