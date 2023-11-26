@@ -29,6 +29,8 @@ int isAI = 2;
 
 const float paddleSpeed = 300; // in pixels per second
 
+TexturedRectangle background_title;
+
 // Ball
 float ballX, ballY, ballSpeedX, ballSpeedY;
 const float ballSpeed = 240; // in pixels per second
@@ -198,6 +200,7 @@ void display() {
     }
 
     glPopMatrix();
+
     glutSwapBuffers();
 }
 
@@ -587,7 +590,6 @@ int main(int argc, char** argv)
     glutTimerFunc(0, timer, 0);
     setGameMode(MODE_TITLE);
 
-    TexturedRectangle background_title;
     background_title.init("bg.png");
 
     glutMainLoop();

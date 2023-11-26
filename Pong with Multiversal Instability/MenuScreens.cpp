@@ -49,6 +49,8 @@ void titleDisplay() {
     glColor3f(1.0f, 1.0f, 1.0f);
     renderText(EVE, (windowWidth / 2.0) - 44, 190.0);
 
+    background_title.display();
+
     glutSwapBuffers();
 }
 
