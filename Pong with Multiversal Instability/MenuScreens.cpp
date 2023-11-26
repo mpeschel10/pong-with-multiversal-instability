@@ -22,6 +22,8 @@ void titleInit() {
 void titleDisplay() {
     glClear(GL_COLOR_BUFFER_BIT);
 
+    background_title.display();
+
     // Central Guide Line
     //    glColor3f(0.5f, 0.5f, 0.5f);
     //    glRectf((windowWidth / 2.0) - 1, 0, (windowWidth / 2.0) + 1, windowHeight);
@@ -48,8 +50,6 @@ void titleDisplay() {
     glRectf((windowWidth / 2.0) - 50, 175, (windowWidth / 2.0) + 50, 225);
     glColor3f(1.0f, 1.0f, 1.0f);
     renderText(EVE, (windowWidth / 2.0) - 44, 190.0);
-
-    background_title.display();
 
     glutSwapBuffers();
 }

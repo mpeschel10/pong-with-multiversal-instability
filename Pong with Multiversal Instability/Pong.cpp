@@ -29,7 +29,7 @@ int isAI = 2;
 
 const float paddleSpeed = 300; // in pixels per second
 
-TexturedRectangle background_title;
+TexturedRectangle background_title("bg.png");
 
 // Ball
 float ballX, ballY, ballSpeedX, ballSpeedY;
@@ -590,7 +590,8 @@ int main(int argc, char** argv)
     glutTimerFunc(0, timer, 0);
     setGameMode(MODE_TITLE);
 
-    background_title.init("bg.png");
+    background_title.init();
+    background_title.xywh(0,0, windowWidth, windowHeight);
 
     glutMainLoop();
     return 0;
