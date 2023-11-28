@@ -72,6 +72,8 @@ bool super = false;
 #define MODE_WIN_PAUSE 3
 #define MODE_PAUSE 4
 #define MODE_AI_VS_AI 5
+#define MODE_SETTINGS 6
+#define MODE_MODIF_SETTINGS 7
 static int game_mode = MODE_TITLE;
 
 // Modifier variable
@@ -254,7 +256,7 @@ void setGameMode(int mode) {
         case MODE_VS_AI:
             break;
         case MODE_TITLE:
-            // Moved the functionality for resetting to the title screen here (Zach)
+            // Functionality for resetting to the title screen here
             player1Score = 0;
             player2Score = 0;
             titleInit();
@@ -271,6 +273,10 @@ void setGameMode(int mode) {
         case MODE_WIN_PAUSE:
             break;
         case MODE_AI_VS_AI:
+            break;
+        case MODE_SETTINGS:
+            break;
+        case MODE_MODIF_SETTINGS:
             break;
         default:
             std::cerr << "Warning: setGameMode was called with invalid mode " << mode << std::endl;

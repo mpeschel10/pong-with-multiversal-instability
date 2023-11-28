@@ -103,3 +103,44 @@ void titleMouse(int button, int state, int x, int y) {
         }
     }
 }
+
+// TODO (Zach): 
+    // Implement basic settings screen and modifier probability settings
+    // Settings screens has button to open modifer probability screen
+    // Modifier probability screen displays the modifer name, a brief description, and a modifiable frequency number.
+
+// -- Settings Screen Functions --
+
+void settingsInit() {
+
+}
+
+void settingsDisplay() {
+
+}
+
+void settingsKeyboard(unsigned char key, int x, int y) {
+
+}
+
+void settingsMouse(int button, int state, int x, int y) {
+
+}
+
+// -- Modifier Settings Screen Functions -- 
+
+void modifSettingsInit() {
+
+}
+
+void modifSettingsDisplay() {
+
+}
+
+void modifSettingsKeyboard(unsigned char key, int x, int y) {
+
+}
+
+void modifSettingsMouse(int button, int state, int x, int y) {
+
+}
