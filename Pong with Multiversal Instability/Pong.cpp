@@ -52,7 +52,7 @@ TexturedRectangle *ball_textures[] = {
     &ping_pong_texture, &baseball_texture, &basketball_texture, &orange_texture
 };
 static int activeBallTexture = -1;
-const float ballDiameter = 50;
+const float ballDiameter = 20; //50
 const float ballRadius = ballDiameter / 2;
 
 // Scoring
@@ -362,9 +362,9 @@ void updatePaddles() {
 }
 
 void updateBall() {
-    if (ballY + 5 >= windowHeight - 31) {
+    if (ballY + (ballDiameter/2.0) >= windowHeight - 31) {
         ballSpeedY = -abs(ballSpeedY);
-    } else if (ballY - 5 <= 0) {
+    } else if (ballY - (ballDiameter / 2.0) <= 0) {
         ballSpeedY = abs(ballSpeedY);
     }
 
@@ -387,7 +387,7 @@ void updateBall() {
         }
     }
 
-    if ((ballX + 5 >= windowWidth)) {
+    if ((ballX + (ballDiameter / 2.0) >= windowWidth)) {
         //cout << "Player 1 wins the game" << endl;
         player1Score += 1;
         //reset();
@@ -395,7 +395,7 @@ void updateBall() {
         glutPostRedisplay();
         return;
     }
-    else if ((ballX - 5 <= 1)) {
+    else if ((ballX - (ballDiameter / 2.0) <= 1)) {
         //cout << "Player 2 wins the game" << endl;
         player2Score += 1;
         //reset();
