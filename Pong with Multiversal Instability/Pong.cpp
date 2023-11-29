@@ -29,7 +29,7 @@ int isAI = 2;
 
 const float paddleSpeed = 300; // in pixels per second
 
-TexturedRectangle background_title("bg.png");
+TexturedRectangle background_title("textures/bg.png");
 
 // Ball
 float ballX, ballY, ballSpeedX, ballSpeedY;

@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   id="svg13388"
+   sodipodi:docname="Table-tennis.svg"
+   viewBox="0 0 241.34851 400.05801"
+   version="1.1"
+   inkscape:version="1.3.2 (091e20ef0f, 2023-11-25, custom)"
+   width="241.34851"
+   height="400.05801"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <title
+     id="title1">Table Tennis</title>
+  <defs
+     id="defs13390">
+    <linearGradient
+       id="linearGradient3920"
+       y2="399.89001"
+       gradientUnits="userSpaceOnUse"
+       x2="2312.1001"
+       gradientTransform="matrix(0.21002574,0.34715946,-0.34715946,0.21002574,-132.13764,4.3975257)"
+       y1="122.39"
+       x1="2335.1001"
+       inkscape:collect="always">
+      <stop
+         id="stop14382"
+         style="stop-color:#deaa87"
+         offset="0" />
+      <stop
+         id="stop14384"
+         style="stop-color:#c87137"
+         offset="1" />
+    </linearGradient>
+    <radialGradient
+       id="radialGradient3922"
+       gradientUnits="userSpaceOnUse"
+       cy="310.12"
+       cx="46.006001"
+       gradientTransform="matrix(0.21002574,0.34715946,-0.33660543,0.20364156,316.21968,583.73474)"
+       r="345.23999"
+       inkscape:collect="always">
+      <stop
+         id="stop14063"
+         style="stop-color:#ff2a2a"
+         offset="0" />
+      <stop
+         id="stop14061"
+         style="stop-color:#be0d00"
+         offset="1" />
+    </radialGradient>
+    <linearGradient
+       id="linearGradient3924"
+       y2="293.37"
+       gradientUnits="userSpaceOnUse"
+       x2="2308.2"
+       gradientTransform="matrix(0.21002574,0.34715946,-0.34715946,0.21002574,-132.96841,5.3780042)"
+       y1="315.42001"
+       x1="2345.3999"
+       inkscape:collect="always">
+      <stop
+         id="stop14353"
+         style="stop-color:#d89a71"
+         offset="0" />
+      <stop
+         id="stop14355"
+         style="stop-color:#e9c6af"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3926"
+       y2="330.04001"
+       gradientUnits="userSpaceOnUse"
+       x2="2505.3999"
+       gradientTransform="matrix(0.21002574,0.34715946,-0.34715946,0.21002574,-132.13764,4.3975257)"
+       y1="452.20001"
+       x1="2427.5"
+       inkscape:collect="always">
+      <stop
+         id="stop14341"
+         style="stop-color:#d38d5f"
+         offset="0" />
+      <stop
+         id="stop14347"
+         style="stop-color:#f4e3d7"
+         offset=".5" />
+      <stop
+         id="stop14343"
+         style="stop-color:#d38d5f"
+         offset="1" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     bordercolor="#666666"
+     inkscape:pageshadow="2"
+     inkscape:window-y="0"
+     pagecolor="#ffffff"
+     inkscape:window-height="1011"
+     inkscape:window-maximized="1"
+     inkscape:zoom="1.5694729"
+     inkscape:window-x="0"
+     showgrid="false"
+     borderopacity="1.0"
+     inkscape:current-layer="g3901"
+     inkscape:cx="163.43067"
+     inkscape:cy="237.97799"
+     inkscape:window-width="1920"
+     inkscape:pageopacity="0.0"
+     inkscape:document-units="px"
+     inkscape:showpageshadow="2"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1">
+    <inkscape:grid
+       id="grid14237"
+       enabled="true"
+       visible="false"
+       snapvisiblegridlinesonly="true"
+       type="xygrid"
+       empspacing="5"
+       originx="-129.32575"
+       originy="0.028998097"
+       spacingy="1"
+       spacingx="1"
+       units="px" />
+  </sodipodi:namedview>
+  <g
+     id="layer1"
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     transform="translate(-129.32575,-652.331)">
+    <g
+       id="g3901"
+       transform="matrix(0.95625,0,0,0.95625,10.516,89.52)">
+      <path
+         id="path14324"
+         d="m 169.8601,843.64442 c 0,0 40.89902,15.09867 52.4391,32.01819 7.53015,11.04011 6.96235,39.4816 6.96235,39.4816 l 37.8558,-0.053 c 0,0 5.11256,-26.73652 13.37379,-36.8688 13.51132,-16.5701 54.6594,-33.56123 54.6594,-33.56123 z"
+         sodipodi:nodetypes="caccacc"
+         style="fill:url(#linearGradient3920);stroke-width:0.807158"
+         inkscape:connector-curvature="0" />
+      <path
+         id="path6604"
+         d="m 353.77665,645.63583 c -24.20428,-42.10697 -76.65455,-64.9867 -124.02166,-54.57759 -38.30863,6.31671 -71.47828,33.10982 -87.78483,68.07156 -16.33841,33.16808 -19.46971,71.28382 -16.95236,107.7004 2.56959,31.14582 16.0095,65.42154 46.22019,79.04996 13.28446,5.90327 28.37401,1.71799 42.44904,3.03265 38.17053,0.10448 76.34036,0.22952 114.51157,0.32753 28.90037,-14.48994 41.00461,-47.69319 46.02807,-77.69662 5.34553,-36.2056 1.93264,-74.21705 -11.6045,-108.33655 -2.52881,-6.04999 -5.4569,-11.97416 -8.84238,-17.5692 z"
+         style="fill:url(#radialGradient3922);stroke-width:0.807158"
+         inkscape:connector-curvature="0" />
+      <path
+         id="path14349"
+         d="m 226.29301,879.58685 21.5626,3.94911 28.3539,-1.03108 c 0,0 -7.6315,-7.51622 -12.53381,-9.19331 -8.38268,-2.86785 -18.03886,-3.09331 -26.56988,-0.70241 -4.1301,1.1578 -10.81256,6.97721 -10.81256,6.97721 z"
+         sodipodi:nodetypes="cccaac"
+         style="fill:url(#linearGradient3924);stroke-width:0.807158"
+         inkscape:connector-curvature="0" />
+      <path
+         id="path14329"
+         d="m 226.15759,879.6197 -2.58605,122.3466 c 0,0 18.86151,4.5499 28.49325,4.9249 9.28662,0.3617 27.75989,-2.5993 27.75989,-2.5993 l -3.57127,-122.32078 z"
+         sodipodi:nodetypes="ccaccc"
+         style="fill:url(#linearGradient3926);stroke-width:0.807158"
+         inkscape:connector-curvature="0" />
+    </g>
+  </g>
+  <metadata
+     id="metadata1">
+    <rdf:RDF>
+      <cc:Work>
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:publisher>
+          <cc:Agent
+             rdf:about="http://openclipart.org/">
+            <dc:title>Openclipart</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:title>Table Tennis</dc:title>
+        <dc:date>2011-08-01T00:53:35</dc:date>
+        <dc:description />
+        <dc:source>https://openclipart.org/detail/152959/table-tennis-by-gnokii</dc:source>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>gnokii</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>ball</rdf:li>
+            <rdf:li>game</rdf:li>
+            <rdf:li>ping pong</rdf:li>
+            <rdf:li>playing</rdf:li>
+            <rdf:li>recreation</rdf:li>
+            <rdf:li>sport</rdf:li>
+            <rdf:li>sports</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+        <cc:license
+           rdf:resource="http://creativecommons.org/publicdomain/zero/1.0/" />
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/publicdomain/zero/1.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+</svg>
