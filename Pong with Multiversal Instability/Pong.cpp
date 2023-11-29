@@ -415,12 +415,12 @@ void updateBall() {
 void updateAI() {
 
     if (isAI == 1) {
-        int rdm = (rand() % 2); // (rand() % 175); && rdm >= 175
+        int rdm = (rand() % 3); // 2/3  chance for the AI to move
         if (isAI && rdm >= 1 && ballX > (windowWidth / 2.0) && ballSpeedX > 0) { // AI
-            if (ballY >= (p2.y1 - 20) && p2.y1 <= windowHeight - 40) {
+            if (ballY >= (p2.y1 - 20) && p2.y1 <= windowHeight - 31) {
                 paddleMoveT(p2, p2.tOffset);
             }
-            else if (ballY <= (p2.y2 + 20) && p2.y2 >= 10) {
+            else if (ballY <= (p2.y2 + 20) && p2.y2 >= 1) {
                 paddleMoveT(p2, -p2.tOffset);
             }
         }

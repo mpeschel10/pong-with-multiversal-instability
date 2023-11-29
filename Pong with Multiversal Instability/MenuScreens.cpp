@@ -27,10 +27,10 @@ void titleDisplay() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     //Background Texture
+    //background_title.display();
     glTranslatef((windowWidth / 2), (windowHeight / 2), 0);
     glRotatef(titleAngle, 0.0, 0.0, 1.0);
     glTranslatef(-(windowWidth / 2), -(windowHeight / 2), 0);
-    //background_title.display();
     background_swirl.display();
     glTranslatef((windowWidth / 2), (windowHeight / 2), 0);
     glRotatef(-titleAngle, 0.0, 0.0, 1.0);
@@ -128,8 +128,8 @@ void titleMouse(int button, int state, int x, int y) {
 }
 
 void titleIdle() {
-    titleAngle = (titleAngle - 0.1);
-    if (titleAngle <= -360) titleAngle = 0;
+    titleAngle = (titleAngle + 0.1);
+    if (abs(titleAngle) >= 360) titleAngle = 0;
     glutPostRedisplay();
 }
 
