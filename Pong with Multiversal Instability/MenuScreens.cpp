@@ -1,8 +1,6 @@
 // Title Screen variables
-string title;
-int titleLen;
 string PVP, PVE, EVE, SET;
-
+float titleAngle;
 // Settings variables
 
 
@@ -14,27 +12,37 @@ void titleInit() {
     gluOrtho2D(0, windowWidth, 0, windowHeight);
     glMatrixMode(GL_MODELVIEW);
 
-    title = "PONG WITH MULTIVERSAL INSTABILITY";
-    titleLen = title.length() / 2.0;
+    // Enable alpha transparency
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
 
     PVP = "Player vs. Player";
     PVE = "Player vs. AI";
     EVE = "AI vs. AI";
     SET = "Settings";
+    titleAngle = 0;
 }
 
 void titleDisplay() {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    background_title.display();
+    //Background Texture
+    glTranslatef((windowWidth / 2), (windowHeight / 2), 0);
+    glRotatef(titleAngle, 0.0, 0.0, 1.0);
+    glTranslatef(-(windowWidth / 2), -(windowHeight / 2), 0);
+    //background_title.display();
+    background_swirl.display();
+    glTranslatef((windowWidth / 2), (windowHeight / 2), 0);
+    glRotatef(-titleAngle, 0.0, 0.0, 1.0);
+    glTranslatef(-(windowWidth / 2), -(windowHeight / 2), 0);
 
     // Central Guide Line
     //    glColor3f(0.5f, 0.5f, 0.5f);
     //    glRectf((windowWidth / 2.0) - 1, 0, (windowWidth / 2.0) + 1, windowHeight);
     //    glColor3f(1.0f, 1.0f, 1.0f);
 
-    // Title
-    renderText(title, (windowWidth / 2.0) - (titleLen * 15.0), 500.0);
+    // Title Texture
+    title.display();
 
     // Player Vs. Player
     glColor3f(0.5f, 0.5f, 0.5f);
@@ -117,6 +125,12 @@ void titleMouse(int button, int state, int x, int y) {
             glutPostRedisplay();
         }
     }
+}
+
+void titleIdle() {
+    titleAngle = (titleAngle - 0.1);
+    if (titleAngle <= -360) titleAngle = 0;
+    glutPostRedisplay();
 }
 
 // TODO (Zach): 

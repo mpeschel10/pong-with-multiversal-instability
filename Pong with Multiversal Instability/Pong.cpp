@@ -23,8 +23,9 @@ const int windowHeight = 630;
 const int windowWidth = 1000;
 const int millisecondsPerFrame = int(1000.0 / TARGET_FPS);
 
-
-TexturedRectangle background_title("textures/bg.png");
+TexturedRectangle title("textures/Title.png");
+TexturedRectangle background_title("textures/bg.png"); // Not needed anymore unless we want a settings option to not have the spinning screen
+TexturedRectangle background_swirl("textures/swirl.png");
 TexturedRectangle ping_pong_texture("textures/ping-pong.png"), baseball_texture("textures/baseball.png"),
                   basketball_texture("textures/basketball.png"), orange_texture("textures/orange.png");
 TexturedRectangle barber_texture("textures/barber.png"), fries_texture("textures/fries.png"),
@@ -282,6 +283,7 @@ void timer(int _) {
 
 void setGameMode(int mode) {
     bool modeIsValid = true;
+    glutIdleFunc(NULL);
     switch (mode) {
         case MODE_VS_AI:
             break;
@@ -294,6 +296,7 @@ void setGameMode(int mode) {
             glutKeyboardFunc(titleKeyboard);
             glutMouseFunc(titleMouse);
             glutSpecialFunc(NULL);
+            glutIdleFunc(titleIdle);
             break;
         case MODE_VS_PLAYER:
             break;
@@ -668,6 +671,7 @@ int main(int argc, char** argv)
     glutDisplayFunc(titleDisplay);
     glutKeyboardFunc(titleKeyboard);
     glutMouseFunc(titleMouse);
+    glutIdleFunc(titleIdle);
     
     glutSpecialUpFunc(specialUp);
     glutKeyboardUpFunc(keyboardUp);
@@ -676,8 +680,15 @@ int main(int argc, char** argv)
     glutTimerFunc(0, timer, 0);
     setGameMode(MODE_TITLE);
 
+    title.init();
+    title.xywh(0, windowHeight - 200, 1000, 200);
+
+    // Not needed anymore unless we want a settings option to not have the spinning screen
     background_title.init();
     background_title.xywh(0,0, windowWidth, windowHeight);
+
+    background_swirl.init();
+    background_swirl.xywh(-100, -283, 1200, 1200);
 
     for (TexturedRectangle *r : ball_textures) {
         r->init();

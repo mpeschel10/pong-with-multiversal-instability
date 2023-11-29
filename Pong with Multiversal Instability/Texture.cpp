@@ -21,6 +21,7 @@ class TexturedRectangle {
 			std::cout << "Warning: Could not load image " << texturePath << ". Has it been moved or deleted?" << std::endl;
 			return;
 		}
+		std::cout << texturePath << " " << textureChannelsCount  << " " << (int) image_bytes[3] << std::endl;
 
 		glGenTextures(1, &textureID);
 		glBindTexture(GL_TEXTURE_2D, textureID);
