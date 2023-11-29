@@ -35,6 +35,11 @@ class TexturedRectangle {
 		stbi_image_free(image_bytes);
 	}
 
+	void centerxy(float x, float y) {
+		this->x = x - w / 2;
+		this->y = y - h / 2;
+	}
+
 	void xywh(float x, float y, float w, float h) {
 		this->x = x; this->y = y;
 		this->w = w; this->h = h;

@@ -31,10 +31,22 @@ const float paddleSpeed = 300; // in pixels per second
 
 TexturedRectangle background_title("textures/bg.png");
 
+TexturedRectangle ping_pong_texture("textures/ping-pong.png"), baseball_texture("textures/baseball.png"),
+                  basketball_texture("textures/basketball.png"), orange_texture("textures/orange.png");
+
 // Ball
 float ballX, ballY, ballSpeedX, ballSpeedY;
 const float ballSpeed = 240; // in pixels per second
 int speedUp = 0;
+
+// Note: The order of ball_textures is important!
+// Must match up with order of menu entries in initTextureMenu.
+TexturedRectangle *ball_textures[] = {
+
+    &ping_pong_texture, &baseball_texture, &basketball_texture, &orange_texture
+};
+static int activeBallTexture = -1;
+
 
 // Scoring
 int player1Score = 0;
@@ -186,7 +198,12 @@ void display() {
     // bezierDraw(p2.path);
 
     // Ball
-    glRectf(ballX - 4, ballY - 4, ballX + 4, ballY + 4);
+    if (activeBallTexture == -1) {
+        glRectf(ballX - 4, ballY - 4, ballX + 4, ballY + 4);
+    } else {
+        ball_textures[activeBallTexture]->centerxy(ballX, ballY);
+        ball_textures[activeBallTexture]->display();
+    }
 
     // Render Score
     string score = to_string(player1Score) + " | " + to_string(player2Score);
@@ -583,6 +600,29 @@ void init() {
 
 }
 
+void onBallTextureMenu(int option) {
+    activeBallTexture = option;
+    glutPostRedisplay();
+}
+
+void onContextMenu(int option) {
+}
+
+void initTextureMenu(void) {
+    GLuint ballTextureMenuID = glutCreateMenu(onBallTextureMenu);
+    const char * labels[] = {
+        "None", "Ping-Pong", "Baseball", "Basketball", "Orange",
+    };
+    
+    for (int i = 0; i < sizeof(labels) / sizeof(char *); i++) {
+        glutAddMenuEntry(labels[i], i - 1);
+    }
+
+    GLuint contextMenuID = glutCreateMenu(onContextMenu);
+    glutAddSubMenu("Ball texture", ballTextureMenuID);
+    glutAttachMenu(GLUT_RIGHT_BUTTON);
+}
+
 int main(int argc, char** argv)
 {
     glutInit(&argc, argv);
@@ -606,6 +646,13 @@ int main(int argc, char** argv)
 
     background_title.init();
     background_title.xywh(0,0, windowWidth, windowHeight);
+
+    for (TexturedRectangle *r : ball_textures) {
+        r->init();
+        r->xywh(0,0, 8,8);
+    }
+    
+    initTextureMenu();
 
     glutMainLoop();
     return 0;
