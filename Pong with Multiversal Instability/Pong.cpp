@@ -450,6 +450,9 @@ void switchModifier(bool ran) {
     }
     else {
         modifier = (modifier + 1) % numModifiers;
+        if (isAI == 2 && modifier == 3) {
+            modifier += 1;
+        }
     }
     
     switch (modifier) {
