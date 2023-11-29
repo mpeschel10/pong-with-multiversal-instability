@@ -46,7 +46,8 @@ TexturedRectangle *ball_textures[] = {
     &ping_pong_texture, &baseball_texture, &basketball_texture, &orange_texture
 };
 static int activeBallTexture = -1;
-
+const float ballDiameter = 50;
+const float ballRadius = ballDiameter / 2;
 
 // Scoring
 int player1Score = 0;
@@ -199,7 +200,7 @@ void display() {
 
     // Ball
     if (activeBallTexture == -1) {
-        glRectf(ballX - 4, ballY - 4, ballX + 4, ballY + 4);
+        glRectf(ballX - ballRadius, ballY - ballRadius, ballX + ballRadius, ballY + ballRadius);
     } else {
         ball_textures[activeBallTexture]->centerxy(ballX, ballY);
         ball_textures[activeBallTexture]->display();
@@ -595,6 +596,11 @@ void init() {
 
     glPointSize(4);
 
+    // Enable alpha transparency
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable( GL_BLEND );
+
+
     srand(time(0));
     reset();
 
@@ -626,7 +632,7 @@ void initTextureMenu(void) {
 int main(int argc, char** argv)
 {
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowSize(windowWidth, windowHeight);
     glutInitWindowPosition(200, 100);
     glutCreateWindow("Pong with Multiversal Instability");
@@ -649,7 +655,7 @@ int main(int argc, char** argv)
 
     for (TexturedRectangle *r : ball_textures) {
         r->init();
-        r->xywh(0,0, 8,8);
+        r->xywh(0,0, ballDiameter,ballDiameter);
     }
     
     initTextureMenu();

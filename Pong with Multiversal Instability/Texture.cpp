@@ -19,6 +19,7 @@ class TexturedRectangle {
 		unsigned char *image_bytes = stbi_load(texturePath, &textureWidth, &textureHeight, &textureChannelsCount, 0);
 		if (image_bytes == NULL) {
 			std::cout << "Warning: Could not load image " << texturePath << ". Has it been moved or deleted?" << std::endl;
+			return;
 		}
 
 		glGenTextures(1, &textureID);
