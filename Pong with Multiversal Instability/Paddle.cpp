@@ -80,6 +80,12 @@ void paddleDraw(const struct Paddle& paddle) {
     glRectf(paddle.x1, paddle.y1, paddle.x2, paddle.y2);
 }
 
+void paddleDraw(const struct Paddle& paddle, TexturedRectangle *texture) {
+    texture->xywh(paddle.x1, paddle.y1, paddle.x2 - paddle.x1, paddle.y2 - paddle.y1);
+    texture->display();
+    // glRectf(paddle.x1, paddle.y1, paddle.x2, paddle.y2);
+}
+
 void paddleCenterY(struct Paddle& paddle, float y)
 {
     paddle.y1 = y + 50.0;

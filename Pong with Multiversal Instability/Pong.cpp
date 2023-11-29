@@ -6,8 +6,8 @@
 #include <string>
 #include <chrono>
 #include <random>
-#include "Paddle.cpp"
 #include "Texture.cpp"
+#include "Paddle.cpp"
 
 #define PI 3.14159265
 #define TARGET_FPS 60.0
@@ -23,16 +23,22 @@ const int windowHeight = 630;
 const int windowWidth = 1000;
 const int millisecondsPerFrame = int(1000.0 / TARGET_FPS);
 
+
+TexturedRectangle background_title("textures/bg.png");
+TexturedRectangle ping_pong_texture("textures/ping-pong.png"), baseball_texture("textures/baseball.png"),
+                  basketball_texture("textures/basketball.png"), orange_texture("textures/orange.png");
+TexturedRectangle barber_texture("textures/barber.png"), fries_texture("textures/fries.png"),
+                  paddle_texture("textures/paddle.png"), sword_texture("textures/sword.png");
+
 struct Paddle p1, p2;
+int activePaddleTexture = -1;
 
 int isAI = 2;
 
+TexturedRectangle *paddle_textures[] = {
+    &barber_texture, &fries_texture, &paddle_texture, &sword_texture,
+};
 const float paddleSpeed = 300; // in pixels per second
-
-TexturedRectangle background_title("textures/bg.png");
-
-TexturedRectangle ping_pong_texture("textures/ping-pong.png"), baseball_texture("textures/baseball.png"),
-                  basketball_texture("textures/basketball.png"), orange_texture("textures/orange.png");
 
 // Ball
 float ballX, ballY, ballSpeedX, ballSpeedY;
@@ -191,8 +197,14 @@ void display() {
     glEnd();
 
     // Paddles
-    paddleDraw(p1);
-    paddleDraw(p2);
+    if (activePaddleTexture == -1)
+    {
+        paddleDraw(p1);
+        paddleDraw(p2);
+    } else {
+        paddleDraw(p1, paddle_textures[activePaddleTexture]);
+        paddleDraw(p2, paddle_textures[activePaddleTexture]);
+    }
 
     // Paddle Paths
     // bezierDraw(p1.path);
@@ -611,21 +623,35 @@ void onBallTextureMenu(int option) {
     glutPostRedisplay();
 }
 
-void onContextMenu(int option) {
+void onPaddleTextureMenu(int option) {
+    activePaddleTexture = option;
+    glutPostRedisplay();
 }
+
+void onContextMenu(int option) { }
 
 void initTextureMenu(void) {
     GLuint ballTextureMenuID = glutCreateMenu(onBallTextureMenu);
-    const char * labels[] = {
+    const char *ballLabels[] = {
         "None", "Ping-Pong", "Baseball", "Basketball", "Orange",
     };
     
-    for (int i = 0; i < sizeof(labels) / sizeof(char *); i++) {
-        glutAddMenuEntry(labels[i], i - 1);
+    for (int i = 0; i < sizeof(ballLabels) / sizeof(char *); i++) {
+        glutAddMenuEntry(ballLabels[i], i - 1);
+    }
+
+    GLuint paddleTextureMenuID = glutCreateMenu(onPaddleTextureMenu);
+    const char *paddleLabels[] = {
+        "None", "Barber Pole", "French Fry", "Paddles", "Swords"
+    };
+
+    for (int i = 0; i < sizeof(paddleLabels) / sizeof(char*); i++) {
+        glutAddMenuEntry(paddleLabels[i], i - 1);
     }
 
     GLuint contextMenuID = glutCreateMenu(onContextMenu);
     glutAddSubMenu("Ball texture", ballTextureMenuID);
+    glutAddSubMenu("Paddle texture", paddleTextureMenuID);
     glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
@@ -658,6 +684,10 @@ int main(int argc, char** argv)
         r->xywh(0,0, ballDiameter,ballDiameter);
     }
     
+    for (TexturedRectangle *r : paddle_textures) {
+        r->init();
+        r->xywh(0,0, 10,100);
+    }
     initTextureMenu();
 
     glutMainLoop();
