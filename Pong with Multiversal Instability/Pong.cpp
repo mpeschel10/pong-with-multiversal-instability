@@ -275,6 +275,11 @@ void setGameMode(int mode) {
         case MODE_AI_VS_AI:
             break;
         case MODE_SETTINGS:
+            settingsInit();
+            glutDisplayFunc(settingsDisplay);
+            glutKeyboardFunc(settingsKeyboard);
+            glutMouseFunc(settingsMouse);
+            glutSpecialFunc(NULL);
             break;
         case MODE_MODIF_SETTINGS:
             break;
