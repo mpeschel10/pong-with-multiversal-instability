@@ -5,6 +5,7 @@ struct Point {
 struct Point operator*(float c, struct Point p) { return Point{p.x * c, p.y * c}; }
 struct Point operator*(struct Point p, float c) { return Point{p.x * c, p.y * c}; }
 struct Point operator+(struct Point p1, struct Point p2) { return Point{p1.x + p2.x, p1.y + p2.y}; }
+struct Point operator-(struct Point p1, struct Point p2) { return Point{p1.x - p2.x, p1.y - p2.y}; }
 
 float pointDistance(const struct Point& p1, const struct Point& p2) {
     float dx = p1.x - p2.x;

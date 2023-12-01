@@ -90,7 +90,6 @@ void titleMouse(int button, int state, int x, int y) {
         if ((x >= ((windowWidth / 2.0) - 80)) && (x <= ((windowWidth / 2.0) + 80)) && (y >= 375) && (y <= 425)) {
             //cout << PVP << endl;
             init();
-            glutMouseFunc(NULL);
             glutKeyboardFunc(keyboard);
             //glutKeyboardUpFunc();
             glutSpecialFunc(special);
@@ -102,7 +101,6 @@ void titleMouse(int button, int state, int x, int y) {
         else if ((x >= ((windowWidth / 2.0) - 70)) && (x <= ((windowWidth / 2.0) + 70)) && (y >= 275) && (y <= 325)) {
             //cout << PVE << endl;
             init();
-            glutMouseFunc(NULL);
             glutKeyboardFunc(keyboard);
             glutDisplayFunc(display);
             isAI = 1;
@@ -112,7 +110,6 @@ void titleMouse(int button, int state, int x, int y) {
         else if ((x >= ((windowWidth / 2.0) - 50)) && (x <= ((windowWidth / 2.0) + 50)) && (y >= 175) && (y <= 225)) {
             //cout << EVE << endl;
             init();
-            glutMouseFunc(NULL);
             glutKeyboardFunc(keyboard);
             glutDisplayFunc(display);
             isAI = 2;

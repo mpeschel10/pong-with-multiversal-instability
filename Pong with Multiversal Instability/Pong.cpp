@@ -112,6 +112,8 @@ const int numModifiers = 9;
 // Track what keys are down for smooth updates.
 bool keyboardDown[255] = {}; // To check for 'a' key, do keyboardDown['a']. Single quote characters are ints in C++
 bool specialDown[255] = {}; // To check for left key, do specialDown[GLUT_KEY_LEFT]
+Point *draggingPoint = NULL;
+Point draggingPointOffset = {};
 
 #include "MenuScreens.cpp" //Reimplemented MenuScreens.cpp for the Title and Settings screen stuff
 
@@ -284,12 +286,46 @@ void timer(int _) {
     glutTimerFunc(millisecondsPerFrame, timer, _);
 }
 
+float squareDistance(int x, int y, Point p) {
+    return (p.x - x) * (p.x - x) + (p.y - y) * (p.y - y);
+}
+
+Point *checkClickedPoint(float radius, int x, int y, Paddle& paddle) {
+    if (squareDistance(x, y, paddle.path.p0) <= radius) return &paddle.path.p0;
+    if (squareDistance(x, y, paddle.path.p1) <= radius) return &paddle.path.p1;
+    if (squareDistance(x, y, paddle.path.p2) <= radius) return &paddle.path.p2;
+    return NULL;
+}
+
+void onMouse(int button, int state, int x, int y) {
+    y = windowHeight - y;
+    if (modifier == MODIF_BEZIER_FREE) {
+        if (button != GLUT_LEFT_BUTTON) return;
+
+        if (state == GLUT_UP) {
+            draggingPoint = NULL;
+            return;
+        }
+        if (state != GLUT_DOWN) return;
+
+        std::cout << "Mouse click at " << x << ", " << y << std::endl;
+        float clickRadius = 2500;
+        Point *clickedPoint = checkClickedPoint(clickRadius, x, y, p1);
+        if (clickedPoint == NULL)
+            clickedPoint = checkClickedPoint(clickRadius, x, y, p2);
+        
+        if (clickedPoint == NULL) return;
+        
+        std::cout << "Clicked point" << std::endl;
+        draggingPoint = clickedPoint;
+        draggingPointOffset = *clickedPoint - Point {float(x), float(y)};
+    }
+}
+
 void setGameMode(int mode) {
     bool modeIsValid = true;
     glutIdleFunc(NULL);
     switch (mode) {
-        case MODE_VS_AI:
-            break;
         case MODE_TITLE:
             // Functionality for resetting to the title screen here
             player1Score = 0;
@@ -302,13 +338,18 @@ void setGameMode(int mode) {
             glutIdleFunc(titleIdle);
             break;
         case MODE_VS_PLAYER:
+            glutMouseFunc(onMouse);
+            break;
+        case MODE_VS_AI:
+            glutMouseFunc(NULL);
+            break;
+        case MODE_AI_VS_AI:
+            glutMouseFunc(NULL);
             break;
         case MODE_PAUSE:
             lastFrameTime = -1;
             break;
         case MODE_WIN_PAUSE:
-            break;
-        case MODE_AI_VS_AI:
             break;
         case MODE_SETTINGS:
             settingsInit();
@@ -485,10 +526,10 @@ void switchModifier(bool ran) {
         modifier = rand() % numModifiers;
     }
     else {
-        modifier = (modifier + 1) % numModifiers;
-        if (isAI == 2 && modifier == 3) {
-            modifier += 1;
-        }
+        modifier++;
+        if (isAI == 2 && (modifier == 3 || modifier == 8))
+            modifier++;
+        modifier = modifier % numModifiers;
     }
     
     switch (modifier) {
@@ -673,7 +714,6 @@ int main(int argc, char** argv)
     titleInit();
     glutDisplayFunc(titleDisplay);
     glutKeyboardFunc(titleKeyboard);
-    glutMouseFunc(titleMouse);
     glutIdleFunc(titleIdle);
     
     glutSpecialUpFunc(specialUp);
