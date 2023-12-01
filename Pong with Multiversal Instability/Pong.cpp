@@ -112,6 +112,7 @@ const int numModifiers = 9;
 // Track what keys are down for smooth updates.
 bool keyboardDown[255] = {}; // To check for 'a' key, do keyboardDown['a']. Single quote characters are ints in C++
 bool specialDown[255] = {}; // To check for left key, do specialDown[GLUT_KEY_LEFT]
+Point mousePosition = {};
 Point *draggingPoint = NULL;
 Point draggingPointOffset = {};
 
@@ -299,6 +300,7 @@ Point *checkClickedPoint(float radius, int x, int y, Paddle& paddle) {
 
 void onMouse(int button, int state, int x, int y) {
     y = windowHeight - y;
+    std::cout << "Mouse position: " << mousePosition.x << " " << mousePosition.y << std::endl;
     if (modifier == MODIF_BEZIER_FREE) {
         if (button != GLUT_LEFT_BUTTON) return;
 
@@ -322,6 +324,9 @@ void onMouse(int button, int state, int x, int y) {
     }
 }
 
+void onMotion(int x, int y) { mousePosition = Point {float(x), float(windowHeight - y)}; }
+void onPassiveMotion(int x, int y) { onMotion(x, y); }
+
 void setGameMode(int mode) {
     bool modeIsValid = true;
     glutIdleFunc(NULL);
@@ -334,17 +339,25 @@ void setGameMode(int mode) {
             glutDisplayFunc(titleDisplay);
             glutKeyboardFunc(titleKeyboard);
             glutMouseFunc(titleMouse);
+            glutMotionFunc(NULL);
+            glutPassiveMotionFunc(NULL);
             glutSpecialFunc(NULL);
             glutIdleFunc(titleIdle);
             break;
         case MODE_VS_PLAYER:
+            glutMotionFunc(onMotion);
+            glutPassiveMotionFunc(onPassiveMotion);
             glutMouseFunc(onMouse);
             break;
         case MODE_VS_AI:
-            glutMouseFunc(NULL);
+            glutMotionFunc(onMotion);
+            glutPassiveMotionFunc(onPassiveMotion);
+            glutMouseFunc(onMouse);
             break;
         case MODE_AI_VS_AI:
-            glutMouseFunc(NULL);
+            glutMotionFunc(onMotion);
+            glutPassiveMotionFunc(onPassiveMotion);
+            glutMouseFunc(onMouse);
             break;
         case MODE_PAUSE:
             lastFrameTime = -1;
@@ -527,7 +540,7 @@ void switchModifier(bool ran) {
     }
     else {
         modifier++;
-        if (isAI == 2 && (modifier == 3 || modifier == 8))
+        if (isAI == 2 && modifier == 3)
             modifier++;
         modifier = modifier % numModifiers;
     }
