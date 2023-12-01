@@ -118,9 +118,13 @@ void paddleCenterPoint(struct Paddle& paddle, const struct Point& point) {
     paddleCenterX(paddle, point.x);
 }
 
+void paddleUpdate(struct Paddle& paddle) {
+    paddleCenterPoint(paddle, bezierInterpolate(paddle.path, paddle.t));
+}
+
 void paddleMoveT(struct Paddle& paddle, float tOffset) {
     paddle.t += tOffset;
-    paddleCenterPoint(paddle, bezierInterpolate(paddle.path, paddle.t));
+    paddleUpdate(paddle);
 }
 
 bool paddleContains(const struct Paddle& paddle, float x, float y) {

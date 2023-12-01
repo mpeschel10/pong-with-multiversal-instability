@@ -300,7 +300,6 @@ Point *checkClickedPoint(float radius, int x, int y, Paddle& paddle) {
 
 void onMouse(int button, int state, int x, int y) {
     y = windowHeight - y;
-    std::cout << "Mouse position: " << mousePosition.x << " " << mousePosition.y << std::endl;
     if (modifier == MODIF_BEZIER_FREE) {
         if (button != GLUT_LEFT_BUTTON) return;
 
@@ -310,7 +309,7 @@ void onMouse(int button, int state, int x, int y) {
         }
         if (state != GLUT_DOWN) return;
 
-        std::cout << "Mouse click at " << x << ", " << y << std::endl;
+        // std::cout << "Mouse click at " << x << ", " << y << std::endl;
         float clickRadius = 2500;
         Point *clickedPoint = checkClickedPoint(clickRadius, x, y, p1);
         if (clickedPoint == NULL)
@@ -318,7 +317,7 @@ void onMouse(int button, int state, int x, int y) {
         
         if (clickedPoint == NULL) return;
         
-        std::cout << "Clicked point" << std::endl;
+        // std::cout << "Clicked point" << std::endl;
         draggingPoint = clickedPoint;
         draggingPointOffset = *clickedPoint - Point {float(x), float(y)};
     }
@@ -384,19 +383,27 @@ void setGameMode(int mode) {
     }
 }
 
+void updateDrag() {
+    if (draggingPoint == NULL) return;
+    *draggingPoint = mousePosition + draggingPointOffset;
+    paddleUpdate(p1);
+    paddleUpdate(p2);
+    glutPostRedisplay();
+}
+
 void updatePaddles() {
 
     if (game_mode == MODE_VS_PLAYER || game_mode == MODE_VS_AI) {
         if (keyboardDown['w']) {
             if (p1.y1 <= windowHeight - 31) {
-                paddleMoveT(p1, p2.tOffset);
+                paddleMoveT(p1, p1.tOffset);
 
                 if (modifier == MODIF_SUPER) super = true;
             }
         }
         if (keyboardDown['s']) {
             if (p1.y2 >= 1) {
-                paddleMoveT(p1, -p2.tOffset);
+                paddleMoveT(p1, -p1.tOffset);
 
                 if (modifier == MODIF_SUPER) super = true;
             }
@@ -584,6 +591,7 @@ void idle() {
     if (lastFrameTime == -1) lastFrameTime = thisFrameTime;
     deltaTime = (thisFrameTime - lastFrameTime) / 1000.0;
 
+    updateDrag();
     updatePaddles();
 
     if (modifier != MODIF_SUPER || (modifier == MODIF_SUPER && super)) {
