@@ -105,8 +105,9 @@ static int game_mode = MODE_TITLE;
 #define MODIF_WOOZY 5
 #define MODIF_DIZZY 6
 #define MODIF_STABLE 7
+#define MODIF_BEZIER_FREE 8
 static int modifier = MODIF_NONE;
-const int numModifiers = 8;
+const int numModifiers = 9;
 
 // Track what keys are down for smooth updates.
 bool keyboardDown[255] = {}; // To check for 'a' key, do keyboardDown['a']. Single quote characters are ints in C++
@@ -208,8 +209,10 @@ void display() {
     }
 
     // Paddle Paths
-    // bezierDraw(p1.path);
-    // bezierDraw(p2.path);
+    if (modifier == MODIF_BEZIER_FREE) {
+        bezierDraw(p1.path);
+        bezierDraw(p2.path);
+    }
 
     // Ball
     if (activeBallTexture == -1) {
@@ -226,7 +229,7 @@ void display() {
 
     frameCount++;
     if (now() - lastSecond >= 1000) {
-        printf("FPS: %d  \r", frameCount);
+        // printf("FPS: %d  \r", frameCount);
         std::cout.flush();
         frameCount = 0;
         lastSecond = now();
