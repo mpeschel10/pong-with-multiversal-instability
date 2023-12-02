@@ -10,8 +10,11 @@
 float randomFloat() { return rand() / float(INT_MAX); }
 float randomFloat(float range) { return randomFloat() * range; }
 
+#include "Point.cpp"
+#include "Path.cpp"
 #include "Texture.cpp"
 #include "Paddle.cpp"
+#include "Peg.cpp"
 
 #define PI 3.14159265
 #define TARGET_FPS 60.0
@@ -91,7 +94,7 @@ bool super = false;
 
 const float pegMaxSize = 50;
 const int pegCount = 10;
-
+Peg pegs[pegCount];
 
 
 // Centralize state management in setGameMode function
@@ -226,6 +229,13 @@ void display() {
     if (modifier == MODIF_BEZIER_FREE) {
         bezierDraw(p1.path);
         bezierDraw(p2.path);
+    }
+
+    if (modifier == MODIF_PONGLE) {
+        for (int i = 0; i < pegCount; i++) {
+            const Peg p = pegs[i];
+            p.display();
+        }
     }
 
     // Ball
@@ -600,8 +610,8 @@ void switchModifier(bool ran) {
         std::cout << "Creating pegs in space " << pongleSpaceSize << " offset by " << pongleSpaceOffsetFromOrigin << std::endl;
         
         for (int i = 0; i < pegCount; i++) {
-            struct Point center = randomIn(pongleSpaceSize) + pongleSpaceOffsetFromOrigin;
-            float radius = randomFloat(pegMaxSize);
+            pegs[i].center = randomIn(pongleSpaceSize) + pongleSpaceOffsetFromOrigin;
+            pegs[i].radius = randomFloat(pegMaxSize);
         }
         break;
     }
