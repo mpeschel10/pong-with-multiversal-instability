@@ -13,6 +13,7 @@ std::ostream& operator<<(std::ostream& os, const struct Point& p) {
 }
 
 float dot(const struct Point& p1, const struct Point& p2) { return p1.x * p2.x + p1.y * p2.y; }
+float cross(const struct Point& p1, const struct Point& p2) { return p1.x * p2.y - p1.y * p2.x; }
 float magnitude(const struct Point& p) { return sqrt(p.x * p.x + p.y * p.y); }
 struct Point normalize(const struct Point& p) { return p / magnitude(p); }
 struct Point randomIn(const struct Point& p) { return Point {randomFloat(p.x), randomFloat(p.y)}; }

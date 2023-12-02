@@ -11,6 +11,7 @@ float randomFloat() { return rand() / float(INT_MAX); }
 float randomFloat(float range) { return randomFloat() * range; }
 
 #include "Point.cpp"
+#include "LineSegment.cpp"
 #include "Path.cpp"
 #include "Texture.cpp"
 #include "Paddle.cpp"
@@ -225,12 +226,13 @@ void display() {
         paddleDraw(p2, paddle_textures[activePaddleTexture]);
     }
 
-    // Paddle Paths
+    // Paddle paths
     if (modifier == MODIF_BEZIER_FREE) {
         bezierDraw(p1.path);
         bezierDraw(p2.path);
     }
 
+    // Pongle pegs
     if (modifier == MODIF_PONGLE) {
         for (int i = 0; i < pegCount; i++) {
             const Peg p = pegs[i];
