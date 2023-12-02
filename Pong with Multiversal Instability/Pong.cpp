@@ -5,7 +5,11 @@
 #include <math.h>
 #include <string>
 #include <chrono>
+#include <climits>
 #include <random>
+float randomFloat() { return rand() / float(INT_MAX); }
+float randomFloat(float range) { return randomFloat() * range; }
+
 #include "Texture.cpp"
 #include "Paddle.cpp"
 
@@ -21,6 +25,7 @@ using namespace std;
 
 const int windowHeight = 630;
 const int windowWidth = 1000;
+const struct Point windowSize = {float(windowWidth), float(windowHeight)};
 const int millisecondsPerFrame = int(1000.0 / TARGET_FPS);
 
 TexturedRectangle title("textures/Title.png");
@@ -84,6 +89,11 @@ float yBefore = 0.0;
 
 bool super = false;
 
+const float pegMaxSize = 50;
+const int pegCount = 10;
+
+
+
 // Centralize state management in setGameMode function
 // At the moment, this only controls setting state for the timer function, since that's what Mark is working on
 #define MODE_TITLE 2
@@ -106,8 +116,9 @@ static int game_mode = MODE_TITLE;
 #define MODIF_DIZZY 6
 #define MODIF_STABLE 7
 #define MODIF_BEZIER_FREE 8
+#define MODIF_PONGLE 9
 static int modifier = MODIF_NONE;
-const int numModifiers = 9;
+const int numModifiers = 10;
 
 // Track what keys are down for smooth updates.
 bool keyboardDown[255] = {}; // To check for 'a' key, do keyboardDown['a']. Single quote characters are ints in C++
@@ -582,6 +593,17 @@ void switchModifier(bool ran) {
     case MODIF_STABLE:
         windowPosX = glutGet((GLenum)GLUT_WINDOW_X);
         windowPosY = glutGet((GLenum)GLUT_WINDOW_Y);
+        break;
+    case MODIF_PONGLE:
+        struct Point pongleSpaceOffsetFromOrigin = windowSize * 0.1 + pegMaxSize;
+        struct Point pongleSpaceSize = windowSize - pongleSpaceOffsetFromOrigin * 2;
+        std::cout << "Creating pegs in space " << pongleSpaceSize << " offset by " << pongleSpaceOffsetFromOrigin << std::endl;
+        
+        for (int i = 0; i < pegCount; i++) {
+            struct Point center = randomIn(pongleSpaceSize) + pongleSpaceOffsetFromOrigin;
+            float radius = randomFloat(pegMaxSize);
+        }
+        break;
     }
     cout << modifier << endl;
 }
