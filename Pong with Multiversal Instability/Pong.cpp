@@ -723,6 +723,8 @@ void initTextureMenu(void) {
     glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
+#include "Test.cpp"
+
 int main(int argc, char** argv)
 {
     glutInit(&argc, argv);
@@ -764,6 +766,8 @@ int main(int argc, char** argv)
         r->xywh(0,0, 10,100);
     }
     initTextureMenu();
+
+    test();
 
     glutMainLoop();
     return 0;
