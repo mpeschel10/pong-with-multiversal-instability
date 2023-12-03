@@ -17,11 +17,11 @@ float bezierLength(const struct Bezier2& path, float startT, float endT) {
     struct Point previous = bezierInterpolate(path, startT);
     for (float t = startT + stepSize; t <= endT; t += stepSize) {
         struct Point next = bezierInterpolate(path, t);
-        spanLength += pointDistance(previous, next);
+        spanLength += distance(previous, next);
         previous = next;
     }
     struct Point next = bezierInterpolate(path, endT);
-    spanLength += pointDistance(previous, next);
+    spanLength += distance(previous, next);
     return spanLength;
 }
 

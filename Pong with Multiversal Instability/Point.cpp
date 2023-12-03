@@ -20,7 +20,7 @@ float magnitude(const struct Point& p) { return sqrt(p.x * p.x + p.y * p.y); }
 struct Point normalize(const struct Point& p) { return p / magnitude(p); }
 struct Point randomIn(const struct Point& p) { return Point {randomFloat(p.x), randomFloat(p.y)}; }
 struct Point pointAngleToPoint(float angle) { return Point {cos(angle), sin(angle)}; }
-float pointDistance(const struct Point& p1, const struct Point& p2) { return magnitude(p1 - p2); }
+float distance(const struct Point& p1, const struct Point& p2) { return magnitude(p1 - p2); }
 
 bool approximates(const struct Point& p1, const struct Point& p2, float error) {
     return round(p1.x / error) == round(p2.x / error) && round(p1.y / error) == round(p2.y / error);

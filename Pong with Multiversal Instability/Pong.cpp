@@ -62,7 +62,7 @@ TexturedRectangle *ball_textures[] = {
     &ping_pong_texture, &baseball_texture, &basketball_texture, &orange_texture
 };
 static int activeBallTexture = -1;
-const float ballDiameter = 20; //50
+const float ballDiameter = 20;
 const float ballRadius = ballDiameter / 2;
 
 // Scoring
@@ -93,8 +93,8 @@ float yBefore = 0.0;
 
 bool super = false;
 
-const float pegMaxSize = 50;
-const int pegCount = 10;
+const float pegSize = 20;
+const int pegCount = 20;
 Peg pegs[pegCount];
 
 
@@ -237,7 +237,7 @@ void display() {
     if (modifier == MODIF_PONGLE) {
         for (int i = 0; i < pegCount; i++) {
             const Peg p = pegs[i];
-            p.display();
+            p.display(false); // false means don't color it yellow
         }
     }
 
@@ -262,28 +262,6 @@ void display() {
         lastSecond = now();
     }
     
-    if (modifier == MODIF_PONGLE) {
-        LineSegment velocity(Point {ballX, ballY}, Point {ballSpeedX, ballSpeedY});
-        velocity.length = 300;
-        velocity.display();
-        for (const Peg& peg : pegs) {
-            struct Point point = velocity.intersection(peg);
-            if (point == NO_INTERSECTION) continue;
-            
-            // std::cout << "Bounce peg " << peg << std::endl;
-            pointDisplay(point);
-
-            LineSegment normal = peg.normal(point);
-            normal.length = 40;
-            normal.display();
-
-            struct Point reflectedDirection = reflect(-velocity.direction, normal.direction);
-            LineSegment reflectedVelocity = LineSegment {point, reflectedDirection, velocity.length};
-            reflectedVelocity.display();
-            // LineSegment newVelocity = 
-        }
-    }
-
     glPopMatrix();
 
     glutSwapBuffers();
@@ -475,6 +453,47 @@ void updatePaddles() {
 }
 
 void updateBall() {
+    bool bounceWeirdness = false;
+
+    if (modifier == MODIF_PONGLE) {
+        struct Point ballVelocity = Point {ballSpeedX, ballSpeedY};
+        float oldSpeed = magnitude(ballVelocity); // May cause drift due to converting to and from lengths and offsets.
+
+        // I should rename the LineSegment velocity to reflect the fact that it's a vector with a location...
+        LineSegment velocity(Point {ballX, ballY}, ballVelocity * deltaTime);
+        
+        // Don't just check ahead from our centerpoint; check ahead from the furthest point on our surface.
+        // Hopefully, we can bounce off the peg without visually intersecting it.
+        velocity.length += ballRadius;
+        
+        for (const Peg& peg : pegs) {
+            struct Point point = velocity.intersection(peg);
+            if (point == NO_INTERSECTION) continue;
+            
+            // std::cout << "Bounce peg " << peg << std::endl;
+
+            struct Point bouncePoint = point;
+            float distanceToBouncePoint = distance(velocity.start, bouncePoint);
+            // Undo adding ballRadius to our speed.
+            distanceToBouncePoint -= ballRadius;
+            velocity.length -= ballRadius;
+            struct Point reflectionPoint = velocity.point(distanceToBouncePoint); // Where our center will be when we bounce
+            
+            float remainingLength = velocity.length - distanceToBouncePoint;
+            LineSegment normal = peg.normal(bouncePoint);
+            struct Point reflectedDirection = reflect(-velocity.direction, normal.direction);
+            LineSegment reflectedVelocity = LineSegment {reflectionPoint, reflectedDirection, remainingLength};
+            
+            struct Point positionAfterBounce = reflectedVelocity.getEnd();
+            ballSpeedX = reflectedVelocity.direction.x * oldSpeed * 1.05;
+            ballSpeedY = reflectedVelocity.direction.y * oldSpeed * 1.05;
+            ballX = positionAfterBounce.x;
+            ballY = positionAfterBounce.y;
+            bounceWeirdness = true;
+            break;
+        }
+    }
+
     if (ballY + (ballDiameter/2.0) >= windowHeight - 31) {
         ballSpeedY = -abs(ballSpeedY);
     } else if (ballY - (ballDiameter / 2.0) <= 0) {
@@ -516,10 +535,14 @@ void updateBall() {
         glutPostRedisplay();
         return;
     }
-    xBefore = ballX;
-    yBefore = ballY;
-    ballX += ballSpeedX * deltaTime;
-    ballY += ballSpeedY * deltaTime;
+
+    // If bounce off peg, handle the actual movement earlier in the method.
+    if (!bounceWeirdness) {
+        xBefore = ballX;
+        yBefore = ballY;
+        ballX += ballSpeedX * deltaTime;
+        ballY += ballSpeedY * deltaTime;
+    }
 }
 
 void updateAI() {
@@ -630,13 +653,13 @@ void switchModifier(bool ran) {
         windowPosY = glutGet((GLenum)GLUT_WINDOW_Y);
         break;
     case MODIF_PONGLE:
-        struct Point pongleSpaceOffsetFromOrigin = windowSize * 0.1 + pegMaxSize;
+        struct Point pongleSpaceOffsetFromOrigin = windowSize * 0.1 + pegSize;
         struct Point pongleSpaceSize = windowSize - pongleSpaceOffsetFromOrigin * 2;
-        std::cout << "Creating pegs in space " << pongleSpaceSize << " offset by " << pongleSpaceOffsetFromOrigin << std::endl;
+        // std::cout << "Creating pegs in space " << pongleSpaceSize << " offset by " << pongleSpaceOffsetFromOrigin << std::endl;
         
         for (int i = 0; i < pegCount; i++) {
             pegs[i].center = randomIn(pongleSpaceSize) + pongleSpaceOffsetFromOrigin;
-            pegs[i].radius = randomFloat(pegMaxSize);
+            pegs[i].radius = pegSize;
         }
         break;
     }
@@ -700,6 +723,8 @@ void keyboard(unsigned char key, int x, int y) {
                 setGameMode(MODE_AI_VS_AI);
                 break;
             };
+            lastFrameTime = now();
+            deltaTime = 0;
         }
         break;
 

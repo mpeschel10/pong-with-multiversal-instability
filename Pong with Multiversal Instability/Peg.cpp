@@ -13,16 +13,16 @@ class Peg {
 			return center + pointAngleToPoint(angle) * radius;
 		}
 		
-		void display(void) const {
+		void display(bool yellow = true) const {
 			float angle = 0;
-			glColor3f(1,1,0);
+			if (yellow) glColor3f(1,1,0);
 			glBegin(GL_POLYGON);
 			for (float angle = 0; angle < circleAngleLimit; angle += circleAngleOffset) {
 				struct Point p = this->angleToPoint(angle);
 				glVertex2f(p.x, p.y);
 			}
 			glEnd();
-		    glColor3f(1,1,1);
+			if (yellow) glColor3f(1,1,1);
 		}
 
 		LineSegment normal(const struct Point& p) const;
