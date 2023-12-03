@@ -1,6 +1,8 @@
 // Title Screen variables
 string PVP, PVE, EVE, SET;
 float titleAngle;
+float r, g, b, a;
+bool up, red, green, blue;
 // Settings variables
 
 
@@ -21,6 +23,14 @@ void titleInit() {
     EVE = "AI vs. AI";
     SET = "Settings";
     titleAngle = 0;
+    r = 0.5f;
+    g = 0.5f;
+    b = 1.0f;
+    a = 1.0f;
+    up = false;
+    red = false;
+    green = false;
+    blue = true;
 }
 
 void titleDisplay() {
@@ -28,6 +38,7 @@ void titleDisplay() {
 
     //Background Texture
     //background_title.display();
+    glColor4f(r, g, b, a);
     glTranslatef((windowWidth / 2), (windowHeight / 2), 0);
     glRotatef(titleAngle, 0.0, 0.0, 1.0);
     glTranslatef(-(windowWidth / 2), -(windowHeight / 2), 0);
@@ -35,6 +46,7 @@ void titleDisplay() {
     glTranslatef((windowWidth / 2), (windowHeight / 2), 0);
     glRotatef(-titleAngle, 0.0, 0.0, 1.0);
     glTranslatef(-(windowWidth / 2), -(windowHeight / 2), 0);
+    glColor3f(1.0f, 1.0f, 1.0f);
 
     // Central Guide Line
     //    glColor3f(0.5f, 0.5f, 0.5f);
@@ -128,6 +140,54 @@ void titleIdle() {
     titleAngle = (titleAngle + 0.1);
     if (abs(titleAngle) >= 360) titleAngle = 0;
     glutPostRedisplay();
+
+    if (a >= 1.0f) {
+        up = false;
+    }
+    else if (a <= 0.7f) {
+        up = true;
+    }
+
+    if (up) {
+        a += 0.0005f;
+    }
+    else {
+        a -= 0.0005f;
+    }
+
+    if (blue) {
+        b -= 0.001f;
+        r += 0.001f;
+    }
+    else if (red) {
+        r -= 0.001f;
+        g += 0.001f;
+    }
+    else if (green) {
+        g -= 0.001f;
+        b += 0.001f;
+    }
+
+    if (b < 0.5f) {
+        blue = false;
+        red = true;
+    }
+    else if (r < 0.5f) {
+        red = false;
+        green = true;
+    }
+    else if (g < 0.5f) {
+        green = false;
+        blue = true;
+    }
+
+    r = r < 0.5f ? 0.5f : r;
+    g = g < 0.5f ? 0.5f : g;
+    b = b < 0.5f ? 0.5f : b;
+
+    r = r > 1.0f ? 1.0f : r;
+    g = g > 1.0f ? 1.0f : g;
+    b = b > 1.0f ? 1.0f : b;
 }
 
 // TODO (Zach): 
