@@ -1,5 +1,6 @@
 #include <GL/glew.h> // Important that this is included before glut.h
 #include <GL/glut.h>
+#include <irrKlang.h>
 #include <iostream>
 #include <stdlib.h>
 #include <math.h>
@@ -26,6 +27,7 @@ static long thisFrameTime; // In milliseconds
 static float deltaTime; // In seconds
 
 using namespace std;
+using namespace irrklang;
 
 const int windowHeight = 630;
 const int windowWidth = 1000;
@@ -98,8 +100,6 @@ bool super = false;
 const float pegSize = 20;
 const int pegCount = 20;
 Peg pegs[pegCount];
-
-
 
 // Centralize state management in setGameMode function
 // At the moment, this only controls setting state for the timer function, since that's what Mark is working on
@@ -890,6 +890,10 @@ int main(int argc, char** argv)
     initTextureMenu();
 
     test();
+
+    ISoundEngine* SoundEngine = createIrrKlangDevice();
+    SoundEngine->play2D("audio/bounce.wav", true);
+
 
     glutMainLoop();
     return 0;
