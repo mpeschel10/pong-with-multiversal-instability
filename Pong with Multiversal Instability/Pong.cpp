@@ -41,7 +41,7 @@ TexturedRectangle barber_texture("textures/barber.png"), fries_texture("textures
                   paddle_texture("textures/paddle.png"), sword_texture("textures/sword.png");
 
 struct Paddle p1, p2;
-int activePaddleTexture = -1;
+int activePaddleTexture = 0;
 
 int isAI = 2;
 
@@ -61,7 +61,7 @@ TexturedRectangle *ball_textures[] = {
 
     &ping_pong_texture, &baseball_texture, &basketball_texture, &orange_texture
 };
-static int activeBallTexture = -1;
+static int activeBallTexture = 0;
 const float ballDiameter = 20;
 const float ballRadius = ballDiameter / 2;
 
@@ -90,6 +90,8 @@ float windowPosX = 0.0;
 float windowPosY = 0.0;
 float xBefore = 0.0;
 float yBefore = 0.0;
+float rgb[] = { 100, 100, 100 };
+float goalRGB[3];
 
 bool super = false;
 
@@ -122,8 +124,9 @@ static int game_mode = MODE_TITLE;
 #define MODIF_STABLE 7
 #define MODIF_BEZIER_FREE 8
 #define MODIF_PONGLE 9
+#define MODIF_GAMER 10
 static int modifier = MODIF_NONE;
-const int numModifiers = 10;
+const int numModifiers = 11;
 
 // Track what keys are down for smooth updates.
 bool keyboardDown[255] = {}; // To check for 'a' key, do keyboardDown['a']. Single quote characters are ints in C++
@@ -146,6 +149,11 @@ void renderText(const string& text, float x, float y) {
     glLoadIdentity();
 
     glColor3f(1.0f, 1.0f, 1.0f); // Text Color: White
+
+    if (modifier == MODIF_GAMER) {
+        //glColor3f(rgb[0] / 100, rgb[1] / 100, rgb[2] / 100);
+    }
+
     glRasterPos2f(x, y);
 
     // Loop through the characters in the text and render them one by one
@@ -190,17 +198,15 @@ void display() {
         glTranslatef(xOffset, yOffset, 0);
         glScalef(xScale, yScale, 1);
     }
+    if (modifier == MODIF_GAMER) {
+        glColor3f(rgb[0] / 100, rgb[1] / 100, rgb[2] / 100);
+        glRectf(0, 0, windowWidth, windowHeight - 30);
+    }
 
-    // Play Area Background Color (?)
-    //glColor3f(0.0f, 1.0f, 1.0f);
-    //glRectf(0, 0, windowWidth, windowHeight - 30);
-
-    glColor3f(0.5f, 0.5f, 0.5f);
+    glColor3f(1.0f, 1.0f, 1.0f);
     glRectf((windowWidth / 2.0) - 5, ((windowHeight - 30) / 2.0) - 1, (windowWidth / 2.0) + 5, ((windowHeight - 30) / 2.0) + 1);
     glRectf((windowWidth / 2.0) - 1, 1, (windowWidth / 2.0) + 1, windowHeight - 31);
-    glColor3f(1.0f, 1.0f, 1.0f);
     
-
     glBegin(GL_LINES); // Draw Play Area
 
     glVertex2i(1, 0);
@@ -606,6 +612,33 @@ void updateModifier() {
         windowPosY += (ballY - yBefore);
         glutPositionWindow(windowPosX, windowPosY); // (?)
         break;
+    case MODIF_GAMER:
+        bool same = true;
+
+        for (int i = 0; i < 2; i++) {
+            if (goalRGB[i] != rgb[i]) {
+                same = false;
+            }
+        }
+
+        if (same) {
+            int randVal;
+            for (int i = 0; i < 3; i++) {
+                randVal = (rand() % 50) + 50;
+                goalRGB[i] = randVal;
+            }
+        }
+        else {
+            int randVal = rand() % 3;
+            if (rgb[randVal] > goalRGB[randVal]) {
+                rgb[randVal] -= 1;
+            }
+            else if (rgb[randVal] < goalRGB[randVal]) {
+                rgb[randVal] += 1;
+            }
+        }
+
+        cout << endl << same << " " << rgb[0] << " " << rgb[1] << " " << rgb[2] << endl << goalRGB[0] << " " << goalRGB[1] << " " << goalRGB[2] << endl;
     }
 }
 
@@ -662,6 +695,10 @@ void switchModifier(bool ran) {
             pegs[i].radius = pegSize;
         }
         break;
+    case MODIF_GAMER:
+        for (int i = 0; i < 3; i++) {
+            goalRGB[i] = (rand() % 50) + 50;
+        }
     }
     cout << modifier << endl;
 }
@@ -705,6 +742,9 @@ void keyboard(unsigned char key, int x, int y) {
             setGameMode(MODE_AI_VS_AI);
             break;
         };
+
+        activeBallTexture = (activeBallTexture + 1) % size(ball_textures);
+        activePaddleTexture = (activePaddleTexture + 1) % size(paddle_textures);
 
         break;
 
