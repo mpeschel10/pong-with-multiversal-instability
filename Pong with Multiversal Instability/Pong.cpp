@@ -697,6 +697,11 @@ void switchModifier(bool ran) {
         windowPosX = glutGet((GLenum)GLUT_WINDOW_X);
         windowPosY = glutGet((GLenum)GLUT_WINDOW_Y);
         break;
+    case MODIF_GAMER:
+        for (int i = 0; i < 3; i++) {
+            goalRGB[i] = (rand() % 50) + 50;
+        }
+        break;
     case MODIF_PONGLE:
         struct Point pongleSpaceOffsetFromOrigin = windowSize * 0.1 + pegSize;
         struct Point pongleSpaceSize = windowSize - pongleSpaceOffsetFromOrigin * 2;
@@ -707,10 +712,6 @@ void switchModifier(bool ran) {
             pegs[i].radius = pegSize;
         }
         break;
-    case MODIF_GAMER:
-        for (int i = 0; i < 3; i++) {
-            goalRGB[i] = (rand() % 50) + 50;
-        }
     }
     cout << modifier << endl;
 }
