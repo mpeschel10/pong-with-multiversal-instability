@@ -28,6 +28,16 @@ class Point:
 			return Point(self.x + other.x, self.y + other.y)
 		else:
 			raise Exception()
+	def __truediv__(self, other):
+		if type(other) == float or type(other) == int:
+			return Point(self.x / other, self.y / other)
+		else:
+			raise Exception()
+	
+	def length(self):
+		return (self.x * self.x + self.y * self.y) ** 2
+	def normalized(self):
+		return self / self.length()
 	
 	def is_parallel(self, other):
 		return self.x * other.y - self.y * other.x == 0
@@ -36,7 +46,9 @@ class LineSegment:
 	def __init__(self, start, offset):
 		self.start = start; self.offset = offset
 	def __str__(self):
-		return f'LineSegment {{{self.start}, {self.offset}}}'
+		direction = self.offset.normalized()
+		length = self.offset.length()
+		return f'LineSegment {{{self.start}, {direction}, {length}}}'
 
 
 def angle_to_point(angle):

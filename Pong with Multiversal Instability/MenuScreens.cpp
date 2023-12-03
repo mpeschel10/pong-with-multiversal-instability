@@ -69,6 +69,13 @@ void titleDisplay() {
     glColor3f(1.0f, 1.0f, 1.0f);
     renderText(SET, (windowWidth / 2.0) - 39, 90.0);
 
+    testPeg.display();
+    testLine.display();
+
+    glColor3f(0,1,0);
+    pointDisplay(testLine.wouldIntersect(testPeg)) ;
+    glColor3f(1.0f, 1.0f, 1.0f);
+
     glutSwapBuffers();
 }
 

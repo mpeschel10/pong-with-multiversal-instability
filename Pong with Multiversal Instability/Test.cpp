@@ -34,15 +34,15 @@ void test() {
 	}
 
 	for (int i = 0; i < sizeof(intersectionTests) / sizeof(struct IntersectionTest); i++) {
-		LineSegment l1 = intersectionTests[i].l1;
-		LineSegment l2 = intersectionTests[i].l2;
-		struct Point expected_intersection = intersectionTests[i].p;
-		struct Point observed_intersection = l1.wouldIntersect(l2);
+	LineSegment l1 = intersectionTests[i].l1;
+	LineSegment l2 = intersectionTests[i].l2;
+	struct Point expected_intersection = intersectionTests[i].p;
+	struct Point observed_intersection = l1.wouldIntersect(l2);
 		
-		if (!approximates(expected_intersection, observed_intersection, 0.001)) {
-			std::cerr << "Error on intersection test " << i << ": l1 " << l1 << " vs l2 " << l2
-				<< ": Expected " << expected_intersection << " but got " << observed_intersection << "." << std::endl;
-		}
+	if (!approximates(expected_intersection, observed_intersection, 0.001)) {
+	std::cerr << "Error on intersection test " << i << ": l1 " << l1 << " vs l2 " << l2
+	<< ": Expected " << expected_intersection << " but got " << observed_intersection << "." << std::endl;
+	}
 
 	}
 }

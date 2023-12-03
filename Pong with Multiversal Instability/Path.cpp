@@ -33,9 +33,9 @@ float bezierSpeedToT(const struct Bezier2& path, float speed) {
 }
 
 void bezierDraw(const struct Bezier2& path) {
-    pointDraw(path.p0);
-    pointDraw(path.p1);
-    pointDraw(path.p2);
+    pointDisplay(path.p0);
+    pointDisplay(path.p1);
+    pointDisplay(path.p2);
     
     glBegin(GL_LINE_STRIP);
     for (float t = 0.0; t < 1.0; t += 0.05) {

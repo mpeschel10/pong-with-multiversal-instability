@@ -11,11 +11,11 @@ float randomFloat() { return rand() / float(INT_MAX); }
 float randomFloat(float range) { return randomFloat() * range; }
 
 #include "Point.cpp"
+#include "Peg.cpp"
 #include "LineSegment.cpp"
 #include "Path.cpp"
 #include "Texture.cpp"
 #include "Paddle.cpp"
-#include "Peg.cpp"
 
 #define PI 3.14159265
 #define TARGET_FPS 60.0
@@ -96,6 +96,9 @@ bool super = false;
 const float pegMaxSize = 50;
 const int pegCount = 10;
 Peg pegs[pegCount];
+
+LineSegment testLine = { Point {200, 200}, Point { 0.8048354510896435, 0.5934980174097721 }, 400 };
+Peg testPeg = {Point {400, 400}, 50};
 
 
 // Centralize state management in setGameMode function
