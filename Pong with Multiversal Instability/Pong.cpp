@@ -29,6 +29,8 @@ static float deltaTime; // In seconds
 using namespace std;
 using namespace irrklang;
 
+ISoundEngine* SoundEngine = createIrrKlangDevice();
+
 const int windowHeight = 630;
 const int windowWidth = 1000;
 const struct Point windowSize = {float(windowWidth), float(windowHeight)};
@@ -502,8 +504,12 @@ void updateBall() {
 
     if (ballY + (ballDiameter/2.0) >= windowHeight - 31) {
         ballSpeedY = -abs(ballSpeedY);
+
+        SoundEngine->play2D("audio/bounce.wav");
     } else if (ballY - (ballDiameter / 2.0) <= 0) {
         ballSpeedY = abs(ballSpeedY);
+
+        SoundEngine->play2D("audio/bounce.wav");
     }
 
     if (paddleContains(p1, ballX, ballY)) {
@@ -514,6 +520,7 @@ void updateBall() {
             ballSpeedX *= 1.05;
             ballSpeedY *= 1.05;
         }
+        SoundEngine->play2D("audio/bounce.wav");
     }
     else if (paddleContains(p2, ballX, ballY)) {
         ballX = p2.x1;
@@ -523,6 +530,7 @@ void updateBall() {
             ballSpeedX *= 1.05;
             ballSpeedY *= 1.05;
         }
+        SoundEngine->play2D("audio/bounce.wav");
     }
 
     if ((ballX + (ballDiameter / 2.0) >= windowWidth)) {
@@ -531,6 +539,8 @@ void updateBall() {
         //reset();
         setGameMode(MODE_WIN_PAUSE);
         glutPostRedisplay();
+
+        SoundEngine->play2D("audio/loss.wav");
         return;
     }
     else if ((ballX - (ballDiameter / 2.0) <= 1)) {
@@ -539,6 +549,8 @@ void updateBall() {
         //reset();
         setGameMode(MODE_WIN_PAUSE);
         glutPostRedisplay();
+
+        SoundEngine->play2D("audio/loss.wav");
         return;
     }
 
@@ -888,12 +900,9 @@ int main(int argc, char** argv)
         r->xywh(0,0, 10,100);
     }
     initTextureMenu();
-
     test();
 
-    ISoundEngine* SoundEngine = createIrrKlangDevice();
-    SoundEngine->play2D("audio/bounce.wav", true);
-
+    SoundEngine->play2D("audio/bgm.wav", true);
 
     glutMainLoop();
     return 0;
