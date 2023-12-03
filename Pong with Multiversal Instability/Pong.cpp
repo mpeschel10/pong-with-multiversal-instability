@@ -268,12 +268,19 @@ void display() {
         velocity.display();
         for (const Peg& peg : pegs) {
             struct Point point = velocity.intersection(peg);
-            if (point == NO_INTERSECTION) {
-                // std::cout << "No intersection with peg " << peg << std::endl;
-                continue;
-            }
-            std::cout << "Bounce peg " << peg << std::endl;
+            if (point == NO_INTERSECTION) continue;
+            
+            // std::cout << "Bounce peg " << peg << std::endl;
             pointDisplay(point);
+
+            LineSegment normal = peg.normal(point);
+            normal.length = 40;
+            normal.display();
+
+            struct Point reflectedDirection = reflect(-velocity.direction, normal.direction);
+            LineSegment reflectedVelocity = LineSegment {point, reflectedDirection, velocity.length};
+            reflectedVelocity.display();
+            // LineSegment newVelocity = 
         }
     }
 

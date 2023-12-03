@@ -2,6 +2,8 @@
 const float circleAngleLimit = 2 * 3.14159265358979323;
 const float circleAngleOffset = circleAngleLimit / CIRCLE_SEGMENT_COUNT;
 
+class LineSegment;
+
 class Peg {
 	public:
 		struct Point center;
@@ -22,6 +24,9 @@ class Peg {
 			glEnd();
 		    glColor3f(1,1,1);
 		}
+
+		LineSegment normal(const struct Point& p) const;
+		// Implementation in LineSegment.cpp
 };
 
 std::ostream& operator<<(std::ostream& os, const Peg& peg) {

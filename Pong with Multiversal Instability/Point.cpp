@@ -8,6 +8,7 @@ struct Point operator+(const struct Point& p1, const struct Point& p2) { return 
 struct Point operator+(const struct Point& p, float addend) { return Point{p.x + addend, p.y + addend}; }
 struct Point operator-(const struct Point& p1, const struct Point& p2) { return Point{p1.x - p2.x, p1.y - p2.y}; }
 struct Point operator/(const struct Point& p, float r) { return Point{p.x / r , p.y / r}; }
+struct Point operator-(const struct Point& p) { return Point {-p.x, -p.y}; }
 bool operator==(const struct Point& p1, const struct Point& p2) { return p1.x == p2.x && p1.y == p2.y; }
 std::ostream& operator<<(std::ostream& os, const struct Point& p) {
     return os << "Point {" << p.x << ", " << p.y << "}";

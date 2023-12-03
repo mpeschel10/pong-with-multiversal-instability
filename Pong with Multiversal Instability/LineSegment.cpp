@@ -93,3 +93,9 @@ class LineSegment {
 std::ostream& operator<<(std::ostream& os, const LineSegment& l) {
 	return os << "LineSegment {" << l.start << ", " << l.direction << "}";
 }
+
+LineSegment Peg::normal(const struct Point& p) const {
+	LineSegment l = LineSegment(p, p - this->center);
+	l.length = 1;
+	return l;
+}
