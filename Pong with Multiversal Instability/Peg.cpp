@@ -24,4 +24,8 @@ class Peg {
 		}
 };
 
+std::ostream& operator<<(std::ostream& os, const Peg& peg) {
+	return os << "Peg {" << peg.center << ", " << peg.radius << "}";
+}
+
 

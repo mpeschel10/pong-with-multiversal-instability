@@ -6,6 +6,18 @@ class LineSegment {
 		struct Point direction;
 		float length = 1;
 
+		LineSegment(const Point& start, const Point& offsetToEnd) {
+			this->start = start;
+			direction = normalize(offsetToEnd);
+			length = magnitude(offsetToEnd);
+		}
+
+		LineSegment(const Point& start, const Point& direction, float length) {
+			this->start = start;
+			this->direction = direction;
+			this->length = length;
+		}
+
 		struct Point point(float distance) { return start + direction * distance; }
 		bool contains(float f) { return 0 <= f && f <= length; }
 
@@ -33,7 +45,7 @@ class LineSegment {
 		float nearestFloat(struct Point base) { return wouldIntersectFloat(this->orthogonal(base)); }
 		struct Point nearest(struct Point base) { return wouldIntersect(this->orthogonal(base)); }
 		
-		struct Point wouldIntersect(const Peg& p) {
+		struct Point intersection(const Peg& p) {
 			// To find the intersection point with circle p, draw a line orthogonal to us through the hub of p.
 			LineSegment otherLineSegment = this->orthogonal(p.center);
 			otherLineSegment.length = p.radius;
@@ -55,7 +67,9 @@ class LineSegment {
 			float gap = sqrt(gapSquared);
 
 			// We need to choose which intersection. I assume length is always positive.
-			return this->point(myDistance - gap);
+			float hitLength = myDistance - gap;
+			if (hitLength > length || hitLength < 0) return NO_INTERSECTION;
+			return this->point(hitLength);
 		}
 
 		void display(void) {

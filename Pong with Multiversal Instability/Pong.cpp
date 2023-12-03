@@ -97,8 +97,6 @@ const float pegMaxSize = 50;
 const int pegCount = 10;
 Peg pegs[pegCount];
 
-LineSegment testLine = { Point {200, 200}, Point { 0.8048354510896435, 0.5934980174097721 }, 400 };
-Peg testPeg = {Point {400, 400}, 50};
 
 
 // Centralize state management in setGameMode function
@@ -262,6 +260,21 @@ void display() {
         std::cout.flush();
         frameCount = 0;
         lastSecond = now();
+    }
+    
+    if (modifier == MODIF_PONGLE) {
+        LineSegment velocity(Point {ballX, ballY}, Point {ballSpeedX, ballSpeedY});
+        velocity.length = 300;
+        velocity.display();
+        for (const Peg& peg : pegs) {
+            struct Point point = velocity.intersection(peg);
+            if (point == NO_INTERSECTION) {
+                // std::cout << "No intersection with peg " << peg << std::endl;
+                continue;
+            }
+            std::cout << "Bounce peg " << peg << std::endl;
+            pointDisplay(point);
+        }
     }
 
     glPopMatrix();
