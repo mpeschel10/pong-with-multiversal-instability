@@ -57,26 +57,26 @@ void titleDisplay() {
     title.display();
 
     // Player Vs. Player
-    glColor3f(0.5f, 0.5f, 0.5f);
+    glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
     glRectf((windowWidth / 2.0) - 85, 375, (windowWidth / 2.0) + 85, 425);
     glColor3f(1.0f, 1.0f, 1.0f);
     renderText(PVP, (windowWidth / 2.0) - 80, 390.0);
 
 
     // Player Vs. AI
-    glColor3f(0.5f, 0.5f, 0.5f);
+    glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
     glRectf((windowWidth / 2.0) - 70, 275, (windowWidth / 2.0) + 70, 325);
     glColor3f(1.0f, 1.0f, 1.0f);
     renderText(PVE, (windowWidth / 2.0) - 63, 290.0);
 
     // Player Vs. AI
-    glColor3f(0.5f, 0.5f, 0.5f);
+    glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
     glRectf((windowWidth / 2.0) - 50, 175, (windowWidth / 2.0) + 50, 225);
     glColor3f(1.0f, 1.0f, 1.0f);
     renderText(EVE, (windowWidth / 2.0) - 44, 190.0);
 
     // Settings
-    glColor3f(0.5f, 0.5f, 0.5f);
+    glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
     glRectf((windowWidth / 2.0) - 45, 75, (windowWidth / 2.0) + 45, 125);
     glColor3f(1.0f, 1.0f, 1.0f);
     renderText(SET, (windowWidth / 2.0) - 39, 90.0);
