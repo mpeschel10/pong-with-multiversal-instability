@@ -43,6 +43,7 @@ TexturedRectangle ping_pong_texture("textures/ping-pong.png"), baseball_texture(
                   basketball_texture("textures/basketball.png"), orange_texture("textures/orange.png");
 TexturedRectangle barber_texture("textures/barber.png"), fries_texture("textures/fries.png"),
                   paddle_texture("textures/paddle.png"), sword_texture("textures/sword.png");
+TexturedRectangle board("textures/board.png");
 
 struct Paddle p1, p2;
 int activePaddleTexture = 0;
@@ -158,7 +159,7 @@ void renderText(const string& text, float x, float y) {
     glColor3f(1.0f, 1.0f, 1.0f); // Text Color: White
 
     if (modifier == MODIF_GAMER) {
-        //glColor3f(rgb[0] / 100, rgb[1] / 100, rgb[2] / 100);
+        glColor3f(rgb[0] / 100, rgb[1] / 100, rgb[2] / 100);
     }
 
     glRasterPos2f(x, y);
@@ -207,13 +208,23 @@ void display() {
     }
     if (modifier == MODIF_GAMER) {
         glColor3f(rgb[0] / 100, rgb[1] / 100, rgb[2] / 100);
-        glRectf(0, 0, windowWidth, windowHeight - 30);
     }
 
+    board.display();
+
     glColor3f(0.5f, 0.5f, 0.5f);
+
+    if (modifier == MODIF_GAMER) {
+        glColor3f(rgb[0] / 200, rgb[1] / 200, rgb[2] / 200);
+    }
+
     glRectf((windowWidth / 2.0) - 5, ((windowHeight - 30) / 2.0) - 1, (windowWidth / 2.0) + 5, ((windowHeight - 30) / 2.0) + 1);
     glRectf((windowWidth / 2.0) - 1, 1, (windowWidth / 2.0) + 1, windowHeight - 31);
     glColor3f(1.0f, 1.0f, 1.0f);
+
+    if (modifier == MODIF_GAMER) {
+        glColor3f(rgb[0] / 100, rgb[1] / 100, rgb[2] / 100);
+    }
 
     glBegin(GL_LINES); // Draw Play Area
 
@@ -291,7 +302,6 @@ void display() {
     string activeModifier = descriptions[modifier];
     scoreLength = activeModifier.length();
     renderText(activeModifier, 10, 606);
-
 
     frameCount++;
     if (now() - lastSecond >= 1000) {
@@ -704,9 +714,14 @@ void updateModifier() {
 }
 
 void switchModifier(bool ran) {
+    int oldModif = modifier;
     float randVal;
     if (ran) {
         modifier = rand() % numModifiers;
+        if (modifier == oldModif) {
+            modifier++;
+            modifier %= numModifiers;
+        }
     }
     else {
         modifier++;
@@ -715,7 +730,7 @@ void switchModifier(bool ran) {
         modifier = modifier % numModifiers;
     }
 
-    // modifier = 12;
+    modifier = 10;
     
     switch (modifier) {
     case MODIF_ROTATE:
@@ -940,10 +955,13 @@ int main(int argc, char** argv)
 
     // Not needed anymore unless we want a settings option to not have the spinning screen
     background_title.init();
-    background_title.xywh(0,0, windowWidth, windowHeight);
+    background_title.xywh(0, 0, windowWidth, windowHeight);
 
     background_swirl.init();
     background_swirl.xywh(-100, -283, 1200, 1200);
+
+    board.init();
+    board.xywh(0, 0, windowWidth, windowHeight-31);
 
     for (TexturedRectangle *r : ball_textures) {
         r->init();
