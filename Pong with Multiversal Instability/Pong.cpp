@@ -96,6 +96,7 @@ float xBefore = 0.0;
 float yBefore = 0.0;
 float rgb[] = { 100, 100, 100 };
 float goalRGB[3];
+vector<vector<float>> previousBallPositions;
 
 bool super = false;
 
@@ -127,8 +128,12 @@ static int game_mode = MODE_TITLE;
 #define MODIF_BEZIER_FREE 8
 #define MODIF_PONGLE 9
 #define MODIF_GAMER 10
+#define MODIF_PHONG 11
+#define MODIF_SNONG 12
 static int modifier = MODIF_NONE;
-const int numModifiers = 11;
+const int numModifiers = 13;
+string descriptions[numModifiers] = { "No Modifier", "Rotate Pong", "Tilt Pong", "SUPERPONG", "Scale Pong", "Woozy Pong", 
+                                      "Dizzy Pong", "Stable Pong", "Bezier Pong", "Pongle", "Gamer Pong", "Phong", "Snong"};
 
 // Track what keys are down for smooth updates.
 bool keyboardDown[255] = {}; // To check for 'a' key, do keyboardDown['a']. Single quote characters are ints in C++
@@ -205,10 +210,11 @@ void display() {
         glRectf(0, 0, windowWidth, windowHeight - 30);
     }
 
-    glColor3f(1.0f, 1.0f, 1.0f);
+    glColor3f(0.5f, 0.5f, 0.5f);
     glRectf((windowWidth / 2.0) - 5, ((windowHeight - 30) / 2.0) - 1, (windowWidth / 2.0) + 5, ((windowHeight - 30) / 2.0) + 1);
     glRectf((windowWidth / 2.0) - 1, 1, (windowWidth / 2.0) + 1, windowHeight - 31);
-    
+    glColor3f(1.0f, 1.0f, 1.0f);
+
     glBegin(GL_LINES); // Draw Play Area
 
     glVertex2i(1, 0);
@@ -257,10 +263,35 @@ void display() {
         ball_textures[activeBallTexture]->display();
     }
 
+    if (modifier == MODIF_SNONG) {
+        //float alpha = 1.0f;
+        for (int i = 0; i < previousBallPositions.size(); i++) {
+            //glColor4f(1.0f, 1.0f, 1.0f, alpha);
+            if (activeBallTexture == -1) {
+                glRectf(previousBallPositions[i][0] - ballRadius, previousBallPositions[i][1] - ballRadius, 
+                        previousBallPositions[i][0] + ballRadius, previousBallPositions[i][1] + ballRadius);
+            }
+            else {
+                ball_textures[activeBallTexture]->centerxy(previousBallPositions[i][0], previousBallPositions[i][1]);
+                ball_textures[activeBallTexture]->display();
+            }
+            //alpha -= 0.2f;
+        }
+        if (previousBallPositions.size() >= speedUp + 1) {
+            previousBallPositions.resize(speedUp + 1);
+        }
+    }
+    
     // Render Score
     string score = to_string(player1Score) + " | " + to_string(player2Score);
     int scoreLength = to_string(player1Score).length();
     renderText(score, 491.0 - scoreLength * 12.0, 606.0);
+
+    // Render Active Modifier
+    string activeModifier = descriptions[modifier];
+    scoreLength = activeModifier.length();
+    renderText(activeModifier, 10, 606);
+
 
     frameCount++;
     if (now() - lastSecond >= 1000) {
@@ -503,16 +534,29 @@ void updateBall() {
     }
 
     if (ballY + (ballDiameter/2.0) >= windowHeight - 31) {
+
         ballSpeedY = -abs(ballSpeedY);
+        speedUp += 1;
+        if (speedUp % 3 == 0) {
+            ballSpeedX *= 1.05;
+            ballSpeedY *= 1.05;
+        }
 
         SoundEngine->play2D("audio/bounce.wav");
     } else if (ballY - (ballDiameter / 2.0) <= 0) {
+
         ballSpeedY = abs(ballSpeedY);
+        speedUp += 1;
+        if (speedUp % 3 == 0) {
+            ballSpeedX *= 1.05;
+            ballSpeedY *= 1.05;
+        }
 
         SoundEngine->play2D("audio/bounce.wav");
     }
 
     if (paddleContains(p1, ballX, ballY)) {
+
         ballX = p1.x2;
         ballSpeedX = 0 - ballSpeedX;
         speedUp += 1;
@@ -523,6 +567,7 @@ void updateBall() {
         SoundEngine->play2D("audio/bounce.wav");
     }
     else if (paddleContains(p2, ballX, ballY)) {
+
         ballX = p2.x1;
         ballSpeedX = 0 - ballSpeedX;
         speedUp += 1;
@@ -600,6 +645,7 @@ void updateAI() {
 }
 
 void updateModifier() {
+    bool same;
     switch (modifier) {
     case MODIF_ROTATE:
         rotateAngle += 0.1;
@@ -625,14 +671,12 @@ void updateModifier() {
         glutPositionWindow(windowPosX, windowPosY); // (?)
         break;
     case MODIF_GAMER:
-        bool same = true;
-
+        same = true;
         for (int i = 0; i < 2; i++) {
             if (goalRGB[i] != rgb[i]) {
                 same = false;
             }
         }
-
         if (same) {
             int randVal;
             for (int i = 0; i < 3; i++) {
@@ -649,8 +693,13 @@ void updateModifier() {
                 rgb[randVal] += 1;
             }
         }
+        break;
+    case MODIF_SNONG:
 
-        cout << endl << same << " " << rgb[0] << " " << rgb[1] << " " << rgb[2] << endl << goalRGB[0] << " " << goalRGB[1] << " " << goalRGB[2] << endl;
+        vector<float> vec;
+        vec.push_back(ballX);
+        vec.push_back(ballY);
+        previousBallPositions.insert(previousBallPositions.begin(), vec);
     }
 }
 
@@ -665,6 +714,8 @@ void switchModifier(bool ran) {
             modifier++;
         modifier = modifier % numModifiers;
     }
+
+    // modifier = 12;
     
     switch (modifier) {
     case MODIF_ROTATE:
@@ -702,11 +753,14 @@ void switchModifier(bool ran) {
             goalRGB[i] = (rand() % 50) + 50;
         }
         break;
+    case MODIF_SNONG:
+        previousBallPositions.clear();
+        break;
     case MODIF_PONGLE:
         struct Point pongleSpaceOffsetFromOrigin = windowSize * 0.1 + pegSize;
         struct Point pongleSpaceSize = windowSize - pongleSpaceOffsetFromOrigin * 2;
         // std::cout << "Creating pegs in space " << pongleSpaceSize << " offset by " << pongleSpaceOffsetFromOrigin << std::endl;
-        
+
         for (int i = 0; i < pegCount; i++) {
             pegs[i].center = randomIn(pongleSpaceSize) + pongleSpaceOffsetFromOrigin;
             pegs[i].radius = pegSize;
