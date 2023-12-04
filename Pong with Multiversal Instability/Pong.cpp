@@ -8,8 +8,13 @@
 #include <chrono>
 #include <climits>
 #include <random>
-float randomFloat() { return rand() / float(INT_MAX); }
-float randomFloat(float range) { return randomFloat() * range; }
+float randomFloat() { return rand() / float(RAND_MAX); }
+float randomFloat(float range) {
+    float f = randomFloat();
+    float result = f * range;
+    //std::cout << "Generated result " << result << " | Range: " << range << std::endl;
+    return result;
+}
 
 #include "Point.cpp"
 #include "Peg.cpp"
@@ -730,7 +735,7 @@ void switchModifier(bool ran) {
         modifier = modifier % numModifiers;
     }
 
-    modifier = 10;
+    //modifier = 10;
     
     switch (modifier) {
     case MODIF_ROTATE:
@@ -774,10 +779,11 @@ void switchModifier(bool ran) {
     case MODIF_PONGLE:
         struct Point pongleSpaceOffsetFromOrigin = windowSize * 0.1 + pegSize;
         struct Point pongleSpaceSize = windowSize - pongleSpaceOffsetFromOrigin * 2;
-        // std::cout << "Creating pegs in space " << pongleSpaceSize << " offset by " << pongleSpaceOffsetFromOrigin << std::endl;
+        std::cout << "Creating pegs in space " << pongleSpaceSize << " offset by " << pongleSpaceOffsetFromOrigin << std::endl;
 
         for (int i = 0; i < pegCount; i++) {
             pegs[i].center = randomIn(pongleSpaceSize) + pongleSpaceOffsetFromOrigin;
+            //std::cout << pegs[i].center << std::endl;
             pegs[i].radius = pegSize;
         }
         break;

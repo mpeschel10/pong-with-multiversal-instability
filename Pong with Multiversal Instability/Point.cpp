@@ -18,7 +18,11 @@ float dot(const struct Point& p1, const struct Point& p2) { return p1.x * p2.x +
 float cross(const struct Point& p1, const struct Point& p2) { return p1.x * p2.y - p1.y * p2.x; }
 float magnitude(const struct Point& p) { return sqrt(p.x * p.x + p.y * p.y); }
 struct Point normalize(const struct Point& p) { return p / magnitude(p); }
-struct Point randomIn(const struct Point& p) { return Point {randomFloat(p.x), randomFloat(p.y)}; }
+struct Point randomIn(const struct Point& p) { 
+    float X = randomFloat(p.x);
+    float Y = randomFloat(p.y);
+    //std::cout << "X: " << X << " | Y: " << Y << std::endl;
+    return Point {X, Y}; }
 struct Point pointAngleToPoint(float angle) { return Point {cos(angle), sin(angle)}; }
 float distance(const struct Point& p1, const struct Point& p2) { return magnitude(p1 - p2); }
 
