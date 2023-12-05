@@ -38,16 +38,16 @@ ISoundEngine* SoundEngine = createIrrKlangDevice();
 
 const int windowHeight = 630;
 const int windowWidth = 1000;
-const struct Point windowSize = {float(windowWidth), float(windowHeight)};
+const struct Point windowSize = { float(windowWidth), float(windowHeight) };
 const int millisecondsPerFrame = int(1000.0 / TARGET_FPS);
 
 TexturedRectangle title("textures/Title.png");
 TexturedRectangle background_title("textures/bg.png"); // Not needed anymore unless we want a settings option to not have the spinning screen
 TexturedRectangle background_swirl("textures/swirl.png");
 TexturedRectangle ping_pong_texture("textures/ping-pong.png"), baseball_texture("textures/baseball.png"),
-                  basketball_texture("textures/basketball.png"), orange_texture("textures/orange.png");
+basketball_texture("textures/basketball.png"), orange_texture("textures/orange.png");
 TexturedRectangle barber_texture("textures/barber.png"), fries_texture("textures/fries.png"),
-                  paddle_texture("textures/paddle.png"), sword_texture("textures/sword.png");
+paddle_texture("textures/paddle.png"), sword_texture("textures/sword.png");
 TexturedRectangle board("textures/board.png");
 
 struct Paddle p1, p2;
@@ -55,7 +55,7 @@ int activePaddleTexture = 0;
 
 int isAI = 2;
 
-TexturedRectangle *paddle_textures[] = {
+TexturedRectangle* paddle_textures[] = {
     &barber_texture, &fries_texture, &paddle_texture, &sword_texture,
 };
 const float paddleSpeed = 300; // in pixels per second
@@ -68,7 +68,7 @@ int boost = 0;
 
 // Note: The order of ball_textures is important!
 // Must match up with order of menu entries in initTextureMenu.
-TexturedRectangle *ball_textures[] = {
+TexturedRectangle* ball_textures[] = {
 
     &ping_pong_texture, &baseball_texture, &basketball_texture, &orange_texture
 };
@@ -137,16 +137,17 @@ static int game_mode = MODE_TITLE;
 #define MODIF_GAMER 10
 #define MODIF_PHONG 11
 #define MODIF_SNONG 12
+#define MODIF_OMNI 13
 static int modifier = MODIF_NONE;
-const int numModifiers = 13;
-string descriptions[numModifiers] = { "No Modifier", "Rotate Pong", "Tilt Pong", "SUPERPONG", "Scale Pong", "Woozy Pong", 
-                                      "Dizzy Pong", "Stable Pong", "Bezier Pong", "Pongle", "Gamer Pong", "Phong", "Snong"};
+const int numModifiers = 14;
+string descriptions[numModifiers] = { "No Modifier", "Rotate Pong", "Tilt Pong", "SUPERPONG", "Scale Pong", "Woozy Pong",
+                                      "Dizzy Pong", "Stable Pong", "Bezier Pong", "Pongle", "Gamer Pong", "Phong", "Snong", "OMNIPONG" };
 
 // Track what keys are down for smooth updates.
 bool keyboardDown[255] = {}; // To check for 'a' key, do keyboardDown['a']. Single quote characters are ints in C++
 bool specialDown[255] = {}; // To check for left key, do specialDown[GLUT_KEY_LEFT]
 Point mousePosition = {};
-Point *draggingPoint = NULL;
+Point* draggingPoint = NULL;
 Point draggingPointOffset = {};
 
 #include "MenuScreens.cpp" //Reimplemented MenuScreens.cpp for the Title and Settings screen stuff
@@ -183,7 +184,7 @@ void renderText(const string& text, float x, float y) {
 }
 
 long now() {
-    return std::chrono::duration_cast< std::chrono::milliseconds >(
+    return std::chrono::duration_cast<std::chrono::milliseconds>(
         std::chrono::system_clock::now().time_since_epoch()
     ).count();
 }
@@ -199,20 +200,20 @@ void display() {
         glScalef(0.5, 0.5, 1);
         glTranslatef(windowWidth / 2, windowHeight / 2, 0);
     }
-    else if (modifier == MODIF_ROTATE || modifier == MODIF_DIZZY) {
+    else if (modifier == MODIF_ROTATE || modifier == MODIF_DIZZY || modifier == MODIF_OMNI) {
         glTranslatef((windowWidth / 2), (windowHeight / 2), 0);
         glRotatef(rotateAngle, 0.0, 0.0, 1.0);
         glTranslatef(-(windowWidth / 2), -(windowHeight / 2), 0);
         glScalef(0.5, 0.5, 1);
         glTranslatef(windowWidth / 2, windowHeight / 2, 0);
     }
-    if (modifier == MODIF_SCALE || modifier == MODIF_WOOZY || modifier == MODIF_DIZZY) {
+    if (modifier == MODIF_SCALE || modifier == MODIF_WOOZY || modifier == MODIF_DIZZY || modifier == MODIF_OMNI) {
         float xOffset = ((windowWidth * (1 - xScale)) / 2.0);
         float yOffset = (((windowHeight - 30) * (1 - yScale)) / 2.0);
         glTranslatef(xOffset, yOffset, 0);
         glScalef(xScale, yScale, 1);
     }
-    if (modifier == MODIF_GAMER) {
+    if (modifier == MODIF_GAMER || modifier == MODIF_OMNI) {
         glColor3f(rgb[0] / 100, rgb[1] / 100, rgb[2] / 100);
     }
 
@@ -220,7 +221,7 @@ void display() {
 
     glColor3f(0.5f, 0.5f, 0.5f);
 
-    if (modifier == MODIF_GAMER) {
+    if (modifier == MODIF_GAMER || modifier == MODIF_OMNI) {
         glColor3f(rgb[0] / 200, rgb[1] / 200, rgb[2] / 200);
     }
 
@@ -228,7 +229,7 @@ void display() {
     glRectf((windowWidth / 2.0) - 1, 1, (windowWidth / 2.0) + 1, windowHeight - 31);
     glColor3f(1.0f, 1.0f, 1.0f);
 
-    if (modifier == MODIF_GAMER) {
+    if (modifier == MODIF_GAMER || modifier == MODIF_OMNI) {
         glColor3f(rgb[0] / 100, rgb[1] / 100, rgb[2] / 100);
     }
 
@@ -253,7 +254,8 @@ void display() {
     {
         paddleDraw(p1);
         paddleDraw(p2);
-    } else {
+    }
+    else {
         paddleDraw(p1, paddle_textures[activePaddleTexture]);
         paddleDraw(p2, paddle_textures[activePaddleTexture]);
     }
@@ -275,18 +277,19 @@ void display() {
     // Ball
     if (activeBallTexture == -1) {
         glRectf(ballX - ballRadius, ballY - ballRadius, ballX + ballRadius, ballY + ballRadius);
-    } else {
+    }
+    else {
         ball_textures[activeBallTexture]->centerxy(ballX, ballY);
         ball_textures[activeBallTexture]->display();
     }
 
-    if (modifier == MODIF_SNONG) {
+    if (modifier == MODIF_SNONG || modifier == MODIF_OMNI) {
         //float alpha = 1.0f;
         for (int i = 0; i < previousBallPositions.size(); i++) {
             //glColor4f(1.0f, 1.0f, 1.0f, alpha);
             if (activeBallTexture == -1) {
-                glRectf(previousBallPositions[i][0] - ballRadius, previousBallPositions[i][1] - ballRadius, 
-                        previousBallPositions[i][0] + ballRadius, previousBallPositions[i][1] + ballRadius);
+                glRectf(previousBallPositions[i][0] - ballRadius, previousBallPositions[i][1] - ballRadius,
+                    previousBallPositions[i][0] + ballRadius, previousBallPositions[i][1] + ballRadius);
             }
             else {
                 ball_textures[activeBallTexture]->centerxy(previousBallPositions[i][0], previousBallPositions[i][1]);
@@ -298,7 +301,7 @@ void display() {
             previousBallPositions.resize(speedUp + 1);
         }
     }
-    
+
     // Render Score
     string score = to_string(player1Score) + " | " + to_string(player2Score);
     int scoreLength = to_string(player1Score).length();
@@ -320,7 +323,7 @@ void display() {
     if (game_mode == MODE_PAUSE) {
         glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
 
-        if (modifier == MODIF_GAMER) {
+        if (modifier == MODIF_GAMER || modifier == MODIF_OMNI) {
             glColor4f(rgb[0] / 100, rgb[1] / 100, rgb[2] / 100, 0.5f);
         }
 
@@ -328,7 +331,7 @@ void display() {
 
         renderText("PAUSED", (windowWidth / 2.0) - 47, (windowHeight / 2.0));
     }
-    
+
     glPopMatrix();
 
     glutSwapBuffers();
@@ -345,7 +348,7 @@ void reset() {
     // This is bad, but the Bezeir2 class atm doesn't admit a better solution.
     p1.targetSpeed = paddleSpeed / TARGET_FPS; p1.t = 0.5;
     p2.targetSpeed = paddleSpeed / TARGET_FPS; p2.t = 0.5;
-    
+
     paddleLeftX(p1, 10.0);
     paddleCenterY(p1, windowCenterY);
     paddleVerticalPath(p1, 15.0, 1, windowHeight - 31);
@@ -353,12 +356,12 @@ void reset() {
     paddleRightX(p2, windowWidth - 10.0);
     paddleCenterY(p2, windowCenterY);
     paddleVerticalPath(p2, windowWidth - 15.0, 1, windowHeight - 31);
-    
+
     ballX = windowWidth / 2.0;
     ballY = windowCenterY;
     speedUp = 0;
 
-    float startAngles[] = {15.0, 105.0, 195.0, 285.0};
+    float startAngles[] = { 15.0, 105.0, 195.0, 285.0 };
     float degrees = startAngles[rand() % 4] + rand() % 60;
     float radians = degrees * PI / 180.0;
 
@@ -382,7 +385,7 @@ float squareDistance(int x, int y, Point p) {
     return (p.x - x) * (p.x - x) + (p.y - y) * (p.y - y);
 }
 
-Point *checkClickedPoint(float radius, int x, int y, Paddle& paddle) {
+Point* checkClickedPoint(float radius, int x, int y, Paddle& paddle) {
     if (squareDistance(x, y, paddle.path.p0) <= radius) return &paddle.path.p0;
     if (squareDistance(x, y, paddle.path.p1) <= radius) return &paddle.path.p1;
     if (squareDistance(x, y, paddle.path.p2) <= radius) return &paddle.path.p2;
@@ -402,71 +405,71 @@ void onMouse(int button, int state, int x, int y) {
 
         // std::cout << "Mouse click at " << x << ", " << y << std::endl;
         float clickRadius = 2500;
-        Point *clickedPoint = checkClickedPoint(clickRadius, x, y, p1);
+        Point* clickedPoint = checkClickedPoint(clickRadius, x, y, p1);
         if (clickedPoint == NULL)
             clickedPoint = checkClickedPoint(clickRadius, x, y, p2);
-        
+
         if (clickedPoint == NULL) return;
-        
+
         // std::cout << "Clicked point" << std::endl;
         draggingPoint = clickedPoint;
-        draggingPointOffset = *clickedPoint - Point {float(x), float(y)};
+        draggingPointOffset = *clickedPoint - Point{ float(x), float(y) };
     }
 }
 
-void onMotion(int x, int y) { mousePosition = Point {float(x), float(windowHeight - y)}; }
+void onMotion(int x, int y) { mousePosition = Point{ float(x), float(windowHeight - y) }; }
 void onPassiveMotion(int x, int y) { onMotion(x, y); }
 
 void setGameMode(int mode) {
     bool modeIsValid = true;
     glutIdleFunc(NULL);
     switch (mode) {
-        case MODE_TITLE:
-            // Functionality for resetting to the title screen here
-            player1Score = 0;
-            player2Score = 0;
-            titleInit();
-            glutDisplayFunc(titleDisplay);
-            glutKeyboardFunc(titleKeyboard);
-            glutMouseFunc(titleMouse);
-            glutMotionFunc(NULL);
-            glutPassiveMotionFunc(NULL);
-            glutSpecialFunc(NULL);
-            glutIdleFunc(titleIdle);
-            break;
-        case MODE_VS_PLAYER:
-            glutMotionFunc(onMotion);
-            glutPassiveMotionFunc(onPassiveMotion);
-            glutMouseFunc(onMouse);
-            break;
-        case MODE_VS_AI:
-            glutMotionFunc(onMotion);
-            glutPassiveMotionFunc(onPassiveMotion);
-            glutMouseFunc(onMouse);
-            break;
-        case MODE_AI_VS_AI:
-            glutMotionFunc(onMotion);
-            glutPassiveMotionFunc(onPassiveMotion);
-            glutMouseFunc(onMouse);
-            break;
-        case MODE_PAUSE:
-            lastFrameTime = -1;
-            break;
-        case MODE_WIN_PAUSE:
-            break;
-        case MODE_SETTINGS:
-            settingsInit();
-            glutDisplayFunc(settingsDisplay);
-            glutKeyboardFunc(settingsKeyboard);
-            glutMouseFunc(settingsMouse);
-            glutSpecialFunc(NULL);
-            break;
-        case MODE_MODIF_SETTINGS:
-            break;
-        default:
-            std::cerr << "Warning: setGameMode was called with invalid mode " << mode << std::endl;
-            modeIsValid = false;
-            break;
+    case MODE_TITLE:
+        // Functionality for resetting to the title screen here
+        player1Score = 0;
+        player2Score = 0;
+        titleInit();
+        glutDisplayFunc(titleDisplay);
+        glutKeyboardFunc(titleKeyboard);
+        glutMouseFunc(titleMouse);
+        glutMotionFunc(NULL);
+        glutPassiveMotionFunc(NULL);
+        glutSpecialFunc(NULL);
+        glutIdleFunc(titleIdle);
+        break;
+    case MODE_VS_PLAYER:
+        glutMotionFunc(onMotion);
+        glutPassiveMotionFunc(onPassiveMotion);
+        glutMouseFunc(onMouse);
+        break;
+    case MODE_VS_AI:
+        glutMotionFunc(onMotion);
+        glutPassiveMotionFunc(onPassiveMotion);
+        glutMouseFunc(onMouse);
+        break;
+    case MODE_AI_VS_AI:
+        glutMotionFunc(onMotion);
+        glutPassiveMotionFunc(onPassiveMotion);
+        glutMouseFunc(onMouse);
+        break;
+    case MODE_PAUSE:
+        lastFrameTime = -1;
+        break;
+    case MODE_WIN_PAUSE:
+        break;
+    case MODE_SETTINGS:
+        settingsInit();
+        glutDisplayFunc(settingsDisplay);
+        glutKeyboardFunc(settingsKeyboard);
+        glutMouseFunc(settingsMouse);
+        glutSpecialFunc(NULL);
+        break;
+    case MODE_MODIF_SETTINGS:
+        break;
+    default:
+        std::cerr << "Warning: setGameMode was called with invalid mode " << mode << std::endl;
+        modeIsValid = false;
+        break;
     }
     if (modeIsValid)
     {
@@ -489,31 +492,31 @@ void updatePaddles() {
             if (p1.y1 <= windowHeight - 31) {
                 paddleMoveT(p1, p1.tOffset);
 
-                if (modifier == MODIF_SUPER) super = true;
+                if (modifier == MODIF_SUPER || modifier == MODIF_OMNI) super = true;
             }
         }
         if (keyboardDown['s']) {
             if (p1.y2 >= 1) {
                 paddleMoveT(p1, -p1.tOffset);
 
-                if (modifier == MODIF_SUPER) super = true;
+                if (modifier == MODIF_SUPER || modifier == MODIF_OMNI) super = true;
             }
         }
     }
-    
+
     if (game_mode == MODE_VS_PLAYER) {
         if (specialDown[GLUT_KEY_UP]) {
             if (p2.y1 <= windowHeight - 31) {
                 paddleMoveT(p2, p2.tOffset);
 
-                if (modifier == MODIF_SUPER) super = true;
+                if (modifier == MODIF_SUPER || modifier == MODIF_OMNI) super = true;
             }
         }
         if (specialDown[GLUT_KEY_DOWN]) {
             if (p2.y2 >= 1) {
                 paddleMoveT(p2, -p2.tOffset);
 
-                if (modifier == MODIF_SUPER) super = true;
+                if (modifier == MODIF_SUPER || modifier == MODIF_OMNI) super = true;
             }
         }
     }
@@ -523,20 +526,20 @@ void updateBall() {
     bool bounceWeirdness = false;
 
     if (modifier == MODIF_PONGLE) {
-        struct Point ballVelocity = Point {ballSpeedX, ballSpeedY};
+        struct Point ballVelocity = Point{ ballSpeedX, ballSpeedY };
         float oldSpeed = magnitude(ballVelocity); // May cause drift due to converting to and from lengths and offsets.
 
         // I should rename the LineSegment velocity to reflect the fact that it's a vector with a location...
-        LineSegment velocity(Point {ballX, ballY}, ballVelocity * deltaTime);
-        
+        LineSegment velocity(Point{ ballX, ballY }, ballVelocity * deltaTime);
+
         // Don't just check ahead from our centerpoint; check ahead from the furthest point on our surface.
         // Hopefully, we can bounce off the peg without visually intersecting it.
         velocity.length += ballRadius;
-        
+
         for (const Peg& peg : pegs) {
             struct Point point = velocity.intersection(peg);
             if (point == NO_INTERSECTION) continue;
-            
+
             // std::cout << "Bounce peg " << peg << std::endl;
 
             struct Point bouncePoint = point;
@@ -545,12 +548,12 @@ void updateBall() {
             distanceToBouncePoint -= ballRadius;
             velocity.length -= ballRadius;
             struct Point reflectionPoint = velocity.point(distanceToBouncePoint); // Where our center will be when we bounce
-            
+
             float remainingLength = velocity.length - distanceToBouncePoint;
             LineSegment normal = peg.normal(bouncePoint);
             struct Point reflectedDirection = reflect(-velocity.direction, normal.direction);
-            LineSegment reflectedVelocity = LineSegment {reflectionPoint, reflectedDirection, remainingLength};
-            
+            LineSegment reflectedVelocity = LineSegment{ reflectionPoint, reflectedDirection, remainingLength };
+
             struct Point positionAfterBounce = reflectedVelocity.getEnd();
             ballSpeedX = reflectedVelocity.direction.x * oldSpeed * 1.05;
             ballSpeedY = reflectedVelocity.direction.y * oldSpeed * 1.05;
@@ -561,7 +564,7 @@ void updateBall() {
         }
     }
 
-    if (ballY + (ballDiameter/2.0) >= windowHeight - 31) {
+    if (ballY + (ballDiameter / 2.0) >= windowHeight - 31) {
 
         ballSpeedY = -abs(ballSpeedY);
         speedUp += 1;
@@ -571,7 +574,8 @@ void updateBall() {
         }
 
         SoundEngine->play2D("audio/bounce.wav");
-    } else if (ballY - (ballDiameter / 2.0) <= 0) {
+    }
+    else if (ballY - (ballDiameter / 2.0) <= 0) {
 
         ballSpeedY = abs(ballSpeedY);
         speedUp += 1;
@@ -649,10 +653,8 @@ void updateBall() {
         ballY += ballSpeedY * deltaTime;
     }
 
-    cout << boost;
     if (boost > 0) {
         boost--;
-        cout << boost;
 
         if (boost == 0) {
             ballSpeedX /= 2;
@@ -699,13 +701,14 @@ void updateAI() {
 
 void updateModifier() {
     bool same;
+    vector<float> vec;
     switch (modifier) {
     case MODIF_ROTATE:
         rotateAngle += 0.1;
         break;
     case MODIF_WOOZY:
         scaleAngle += 0.025;
-        if (scaleAngle >= 360) 
+        if (scaleAngle >= 360)
             scaleAngle = 0.0;
         xScale = (cos(scaleAngle) / 4.0) + 0.75;
         yScale = (sin(scaleAngle) / 4.0) + 0.75;
@@ -748,11 +751,46 @@ void updateModifier() {
         }
         break;
     case MODIF_SNONG:
-
-        vector<float> vec;
         vec.push_back(ballX);
         vec.push_back(ballY);
         previousBallPositions.insert(previousBallPositions.begin(), vec);
+        break;
+    case MODIF_OMNI:
+        rotateAngle += 0.1;
+        scaleAngle += 0.025;
+        if (scaleAngle >= 360)
+            scaleAngle = 0.0;
+        xScale = (cos(scaleAngle) / 4.0) + 0.75;
+        yScale = (sin(scaleAngle) / 4.0) + 0.75;
+        windowPosX -= (ballX - xBefore);
+        windowPosY += (ballY - yBefore);
+        glutPositionWindow(windowPosX, windowPosY);
+        same = true;
+        for (int i = 0; i < 2; i++) {
+            if (goalRGB[i] != rgb[i]) {
+                same = false;
+            }
+        }
+        if (same) {
+            int randVal;
+            for (int i = 0; i < 3; i++) {
+                randVal = (rand() % 50) + 50;
+                goalRGB[i] = randVal;
+            }
+        }
+        else {
+            int randVal = rand() % 3;
+            if (rgb[randVal] > goalRGB[randVal]) {
+                rgb[randVal] -= 1;
+            }
+            else if (rgb[randVal] < goalRGB[randVal]) {
+                rgb[randVal] += 1;
+            }
+        }
+        vec.push_back(ballX);
+        vec.push_back(ballY);
+        previousBallPositions.insert(previousBallPositions.begin(), vec);
+        break;
     }
 }
 
@@ -773,8 +811,8 @@ void switchModifier(bool ran) {
         modifier = modifier % numModifiers;
     }
 
-    //modifier = 10;
-    
+    modifier = 13;
+
     switch (modifier) {
     case MODIF_ROTATE:
         rotateAngle = 0.0;
@@ -814,6 +852,20 @@ void switchModifier(bool ran) {
     case MODIF_SNONG:
         previousBallPositions.clear();
         break;
+    case MODIF_OMNI:
+        rotateAngle = 0.0;
+        xScale = 1.0;
+        yScale = 1.0;
+        if (isAI == 2) {
+            modifier = MODIF_NONE;
+        }
+        windowPosX = glutGet((GLenum)GLUT_WINDOW_X);
+        windowPosY = glutGet((GLenum)GLUT_WINDOW_Y);
+        for (int i = 0; i < 3; i++) {
+            goalRGB[i] = (rand() % 50) + 50;
+        }
+        previousBallPositions.clear();
+        break;
     case MODIF_PONGLE:
         struct Point pongleSpaceOffsetFromOrigin = windowSize * 0.1 + pegSize;
         struct Point pongleSpaceSize = windowSize - pongleSpaceOffsetFromOrigin * 2;
@@ -837,7 +889,7 @@ void idle() {
     updateDrag();
     updatePaddles();
 
-    if (modifier != MODIF_SUPER || (modifier == MODIF_SUPER && super)) {
+    if (modifier != MODIF_SUPER || (modifier == MODIF_SUPER && super) || modifier != MODIF_OMNI || (modifier == MODIF_OMNI && super)) {
         updateBall();
         super = false;
     }
@@ -853,7 +905,7 @@ void idle() {
 void keyboard(unsigned char key, int x, int y) {
     keyboardDown[key] = true;
     switch (key) {
-    
+
     case 'r':
         reset();
         switchModifier(true);
@@ -877,7 +929,8 @@ void keyboard(unsigned char key, int x, int y) {
     case 'p':
         if (game_mode == MODE_VS_AI || game_mode == MODE_VS_PLAYER || game_mode == MODE_AI_VS_AI) {
             setGameMode(MODE_PAUSE);
-        } else if (game_mode == MODE_PAUSE) {
+        }
+        else if (game_mode == MODE_PAUSE) {
             switch (isAI) {
             case 0:
                 setGameMode(MODE_VS_PLAYER);
@@ -909,7 +962,7 @@ void keyboard(unsigned char key, int x, int y) {
 
 void keyboardUp(unsigned char key, int x, int y) { keyboardDown[key] = false; }
 
-void special(int key, int x, int y)   { specialDown[key] = true; }
+void special(int key, int x, int y) { specialDown[key] = true; }
 
 void specialUp(int key, int x, int y) { specialDown[key] = false; }
 
@@ -926,7 +979,7 @@ void init() {
 
     // Enable alpha transparency
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable( GL_BLEND );
+    glEnable(GL_BLEND);
 
 
     srand(time(0));
@@ -948,16 +1001,16 @@ void onContextMenu(int option) { }
 
 void initTextureMenu(void) {
     GLuint ballTextureMenuID = glutCreateMenu(onBallTextureMenu);
-    const char *ballLabels[] = {
+    const char* ballLabels[] = {
         "None", "Ping-Pong", "Baseball", "Basketball", "Orange",
     };
-    
-    for (int i = 0; i < sizeof(ballLabels) / sizeof(char *); i++) {
+
+    for (int i = 0; i < sizeof(ballLabels) / sizeof(char*); i++) {
         glutAddMenuEntry(ballLabels[i], i - 1);
     }
 
     GLuint paddleTextureMenuID = glutCreateMenu(onPaddleTextureMenu);
-    const char *paddleLabels[] = {
+    const char* paddleLabels[] = {
         "None", "Barber Pole", "French Fry", "Paddles", "Swords"
     };
 
@@ -986,7 +1039,7 @@ int main(int argc, char** argv)
     glutDisplayFunc(titleDisplay);
     glutKeyboardFunc(titleKeyboard);
     glutIdleFunc(titleIdle);
-    
+
     glutSpecialUpFunc(specialUp);
     glutKeyboardUpFunc(keyboardUp);
 
@@ -1005,16 +1058,16 @@ int main(int argc, char** argv)
     background_swirl.xywh(-100, -283, 1200, 1200);
 
     board.init();
-    board.xywh(0, 0, windowWidth, windowHeight-31);
+    board.xywh(0, 0, windowWidth, windowHeight - 31);
 
-    for (TexturedRectangle *r : ball_textures) {
+    for (TexturedRectangle* r : ball_textures) {
         r->init();
-        r->xywh(0,0, ballDiameter,ballDiameter);
+        r->xywh(0, 0, ballDiameter, ballDiameter);
     }
-    
-    for (TexturedRectangle *r : paddle_textures) {
+
+    for (TexturedRectangle* r : paddle_textures) {
         r->init();
-        r->xywh(0,0, 10,100);
+        r->xywh(0, 0, 10, 100);
     }
     initTextureMenu();
     test();
