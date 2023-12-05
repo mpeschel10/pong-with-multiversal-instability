@@ -109,6 +109,7 @@ float yBefore = 0.0;
 float rgb[] = { 100, 100, 100 };
 float goalRGB[3];
 vector<vector<float>> previousBallPositions;
+float flashAlpha;
 
 bool super = false;
 
@@ -143,10 +144,11 @@ static int game_mode = MODE_TITLE;
 #define MODIF_PHONG 11
 #define MODIF_SNONG 12
 #define MODIF_OMNI 13
+#define MODIF_FLASH 14
 static int modifier = MODIF_NONE;
-const int numModifiers = 14;
+const int numModifiers = 15;
 string descriptions[numModifiers] = { "No Modifier", "Rotate Pong", "Tilt Pong", "SUPERPONG", "Scale Pong", "Woozy Pong",
-                                      "Dizzy Pong", "Stable Pong", "Bezier Pong", "Pongle", "Gamer Pong", "Phong", "Snong", "OMNIPONG" };
+                                      "Dizzy Pong", "Stable Pong", "Bezier Pong", "Pongle", "Gamer Pong", "Phong", "Snong", "OMNIPONG", "Flash Pong"};
 float modifProbs[numModifiers] = { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
 
 // Track what keys are down for smooth updates.
@@ -358,6 +360,11 @@ void display() {
         }
     }
 
+    if (modifier == MODIF_FLASH) {
+        glColor4f(0.0f, 0.0f, 0.0f, flashAlpha);
+        glRectf(1, 0, windowWidth - 1, windowHeight - 31);
+    }
+
     // Render Score
     string score = to_string(player1Score) + " | " + to_string(player2Score);
     int scoreLength = to_string(player1Score).length();
@@ -382,8 +389,23 @@ void display() {
         if (modifier == MODIF_GAMER || modifier == MODIF_OMNI) {
             glColor4f(rgb[0] / 100, rgb[1] / 100, rgb[2] / 100, 0.5f);
         }
+        
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        glLoadIdentity();
+        gluOrtho2D(0, windowWidth, 0, windowHeight);
+
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glLoadIdentity();
 
         glRectf((windowWidth / 2.0) - 55, (windowHeight / 2.0) + 40, (windowWidth / 2.0) + 55, (windowHeight / 2.0) - 25);
+
+        glMatrixMode(GL_MODELVIEW);
+        glPopMatrix();
+
+        glMatrixMode(GL_PROJECTION);
+        glPopMatrix();
 
         renderText("PAUSED", (windowWidth / 2.0) - 47, (windowHeight / 2.0));
     }
@@ -399,7 +421,7 @@ void display() {
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
         glLoadIdentity();
-        gluOrtho2D(0, windowWidth, 0, windowHeight); // Modified for the window size of our application
+        gluOrtho2D(0, windowWidth, 0, windowHeight);
 
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
@@ -657,6 +679,11 @@ void updateBall() {
     if (ballY + (ballDiameter / 2.0) >= windowHeight - 31) {
 
         ballSpeedY = -abs(ballSpeedY);
+
+        if (modifier == MODIF_PHONG) {
+            ballSpeedY *= rand() % 2 == 0 ? 0.65 : 1.35;
+        }
+
         speedUp += 1;
         if (speedUp % 3 == 0) {
             ballSpeedX *= 1.05;
@@ -668,6 +695,11 @@ void updateBall() {
     else if (ballY - (ballDiameter / 2.0) <= 0) {
 
         ballSpeedY = abs(ballSpeedY);
+
+        if (modifier == MODIF_PHONG) {
+            ballSpeedY *= rand() % 2 == 0 ? 0.65 : 1.35;
+        }
+
         speedUp += 1;
         if (speedUp % 3 == 0) {
             ballSpeedX *= 1.05;
@@ -682,6 +714,10 @@ void updateBall() {
         ballX = p1.x2;
         ballSpeedX = 0 - ballSpeedX;
         speedUp += 1;
+
+        if (modifier == MODIF_PHONG) {
+            ballSpeedX *= rand() % 2 == 0 ? 0.65 : 1.35;
+        }
 
         if (keyboardDown['e']) {
             ballSpeedX *= 2;
@@ -700,6 +736,10 @@ void updateBall() {
         ballX = p2.x1;
         ballSpeedX = 0 - ballSpeedX;
         speedUp += 1;
+
+        if (modifier == MODIF_PHONG) {
+            ballSpeedX *= rand() % 2 == 0 ? 0.65 : 1.35;
+        }
 
         if (specialDown[GLUT_KEY_LEFT]) {
             ballSpeedX *= 2;
@@ -845,6 +885,12 @@ void updateModifier() {
         vec.push_back(ballY);
         previousBallPositions.insert(previousBallPositions.begin(), vec);
         break;
+    case MODIF_FLASH:
+        flashAlpha += 0.005f;
+        if (flashAlpha > 1) {
+            flashAlpha = 0.0f;
+        }
+        break;
     case MODIF_OMNI:
         rotateAngle += 0.1;
         scaleAngle += 0.025;
@@ -917,7 +963,7 @@ void switchModifier(bool ran) {
         modifier = modifier % numModifiers;
     }
 
-    //modifier = 13;
+    modifier = MODIF_OMNI;
 
     switch (modifier) {
     case MODIF_ROTATE:
@@ -957,6 +1003,9 @@ void switchModifier(bool ran) {
         break;
     case MODIF_SNONG:
         previousBallPositions.clear();
+        break;
+    case MODIF_FLASH:
+        flashAlpha = 0.0f;
         break;
     case MODIF_OMNI:
         rotateAngle = 0.0;
@@ -1028,8 +1077,8 @@ void timer(int _) {
                 break;
             };
 
-            activeBallTexture = (activeBallTexture + 1) % size(ball_textures);
-            activePaddleTexture = (activePaddleTexture + 1) % size(paddle_textures);
+            //activeBallTexture = (activeBallTexture + 1) % size(ball_textures);
+            //activePaddleTexture = (activePaddleTexture + 1) % size(paddle_textures);
         }
 
         glutPostRedisplay();
@@ -1057,8 +1106,8 @@ void keyboard(unsigned char key, int x, int y) {
             break;
         };
 
-        activeBallTexture = (activeBallTexture + 1) % size(ball_textures);
-        activePaddleTexture = (activePaddleTexture + 1) % size(paddle_textures);
+        //activeBallTexture = (activeBallTexture + 1) % size(ball_textures);
+        //activePaddleTexture = (activePaddleTexture + 1) % size(paddle_textures);
 
         break;
 
