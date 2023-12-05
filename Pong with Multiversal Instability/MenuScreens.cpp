@@ -4,6 +4,9 @@ float titleAngle;
 float r, g, b, a;
 bool up, red, green, blue;
 bool musicOn = true;
+float volume = 1.0f;
+Slider volumeSlider(200.0f, 480.0f, 500.0f, 480.0f, volume);
+
 
 // Settings variables
 
@@ -206,7 +209,6 @@ void settingsInit() {
     glMatrixMode(GL_MODELVIEW);
 }
 
-
 void settingsDisplay() {
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -219,9 +221,14 @@ void settingsDisplay() {
 
     if(musicOn) { glColor3f(0.0f, 1.0f, 0.0f); }
     else { glColor3f(1.0f, 0.0f, 0.0f);  }
-    glRectf(215, 500, 295, 525);
+    glRectf(215, 520, 295, 545);
     glColor3f(1.0f, 1.0f, 1.0f);
-    renderText("Mute Music: ", 80, 505);
+    renderText("Mute Music:", 80.0f, 525.0f);
+    if(musicOn) { renderText("On", 240.0f, 525.0f, 0.0f, 0.0f, 0.0f); }
+    else { renderText("Off", 240.0f, 525.0f, 0.0f, 0.0f, 0.0f); }
+
+    renderText("Volume:", 80.0f, 475.0f);
+    volumeSlider.display();
 
     glutSwapBuffers();
 }
@@ -244,7 +251,7 @@ void settingsMouse(int button, int state, int x, int y) {
             setGameMode(MODE_TITLE);
             glutPostRedisplay();
         }
-        else if ((x >= 215) && (x <= 295) && (y >= 500) && (y <= 530)) {
+        else if ((x >= 215) && (x <= 295) && (y >= 520) && (y <= 545)) {
             if (musicOn) {
                 SoundEngine->stopAllSounds();
                 musicOn = false;
@@ -253,6 +260,11 @@ void settingsMouse(int button, int state, int x, int y) {
                 SoundEngine->play2D("audio/bgm.wav", true);
                 musicOn = true;
             }
+        }
+        else if ((x >= 195) && (x <= 505) && (y >= 470) && (y <= 490)) {
+            volume = volumeSlider.setHandle(x);
+            SoundEngine->setSoundVolume(volume);
+            glutPostRedisplay();
         }
     }
 }

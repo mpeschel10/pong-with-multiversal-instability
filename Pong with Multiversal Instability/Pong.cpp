@@ -22,6 +22,7 @@ float randomFloat(float range) {
 #include "Path.cpp"
 #include "Texture.cpp"
 #include "Paddle.cpp"
+#include "Slider.cpp"
 
 #define PI 3.14159265
 #define TARGET_FPS 60.0
@@ -85,11 +86,13 @@ int player2Score = 0;
 // Primarily used by MenuScreens.cpp to prevent errors
 void idle();
 void renderText(const string& text, float x, float y);
+void renderText(const string& text, float x, float y, float r, float g, float b);
 void setGameMode(int mode);
 void init();
 void display();
 void keyboard(unsigned char key, int x, int y);
 void special(int key, int x, int y);
+float squareDistance(int x, int y, Point p);
 
 
 // Modifiers
@@ -151,7 +154,7 @@ Point mousePosition = {};
 Point* draggingPoint = NULL;
 Point draggingPointOffset = {};
 
-#include "MenuScreens.cpp" //Reimplemented MenuScreens.cpp for the Title and Settings screen stuff
+#include "MenuScreens.cpp" // Title and Settings screen
 
 void renderText(const string& text, float x, float y) {
     // Professor Reza's Render Text Function
@@ -165,6 +168,37 @@ void renderText(const string& text, float x, float y) {
     glLoadIdentity();
 
     glColor3f(1.0f, 1.0f, 1.0f); // Text Color: White
+
+    if (modifier == MODIF_GAMER) {
+        glColor3f(rgb[0] / 100, rgb[1] / 100, rgb[2] / 100);
+    }
+
+    glRasterPos2f(x, y);
+
+    // Loop through the characters in the text and render them one by one
+    for (const char& character : text) {
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, character);
+    }
+
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+}
+
+void renderText(const string& text, float x, float y, float r, float g, float b) {
+    // Professor Reza's Render Text Function with added text color specifications
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0, windowWidth, 0, windowHeight); // Modified for the window size of our application
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    glColor3f(r, g, b); // Normal Text Color: White
 
     if (modifier == MODIF_GAMER) {
         glColor3f(rgb[0] / 100, rgb[1] / 100, rgb[2] / 100);
@@ -1135,6 +1169,7 @@ int main(int argc, char** argv)
     test();
 
     SoundEngine->play2D("audio/bgm.wav", true);
+    SoundEngine->setSoundVolume(volume); // "volume" is in MenuScreens.cpp;
 
     glutMainLoop();
     return 0;
