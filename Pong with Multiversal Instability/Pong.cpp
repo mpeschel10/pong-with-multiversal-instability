@@ -996,8 +996,8 @@ void timer(int _) {
                 break;
             };
 
-            activeBallTexture = (activeBallTexture + 1) % size(ball_textures);
-            activePaddleTexture = (activePaddleTexture + 1) % size(paddle_textures);
+            //activeBallTexture = (activeBallTexture + 1) % size(ball_textures);
+            //activePaddleTexture = (activePaddleTexture + 1) % size(paddle_textures);
         }
 
         glutPostRedisplay();
@@ -1025,8 +1025,8 @@ void keyboard(unsigned char key, int x, int y) {
             break;
         };
 
-        activeBallTexture = (activeBallTexture + 1) % size(ball_textures);
-        activePaddleTexture = (activePaddleTexture + 1) % size(paddle_textures);
+        //activeBallTexture = (activeBallTexture + 1) % size(ball_textures);
+        //activePaddleTexture = (activePaddleTexture + 1) % size(paddle_textures);
 
         break;
 
