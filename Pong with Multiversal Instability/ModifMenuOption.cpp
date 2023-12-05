@@ -4,6 +4,17 @@ public:
 	Slider modifSlider;
 	float x, y;
 
+	modifMenuOption() {
+		modifier = 0;
+		this->x = 0.0f;
+		this->y = 0.0f;
+		modifSlider.start.x = 0.0f;
+		modifSlider.start.y = 0.0f;
+		modifSlider.end.x = 0.0f;
+		modifSlider.end.y = 0.0f;
+		modifSlider.handle = 0.0f;
+	}
+
 	modifMenuOption(int modif, float x, float y) {
 		modifier = modif;
 		this->x = x;
@@ -22,5 +33,14 @@ public:
 
 	bool isWithinBounds(float x, float y) {
 		return modifSlider.isWithinBounds(x, y);
+	}
+
+	bool changeProb(float x, float y) {
+		bool withinSlider = isWithinBounds(x, y);
+		if (withinSlider) {
+			float prob = modifSlider.setHandle(x);
+			modifProbs[modifier] = prob;
+		}
+		return withinSlider;
 	}
 };

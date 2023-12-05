@@ -3,12 +3,13 @@ string PVP, PVE, EVE, SET;
 float titleAngle;
 float r, g, b, a;
 bool up, red, green, blue;
+
+// Settings variables
 bool musicOn = true;
 float volume = 1.0f;
 Slider volumeSlider(200.0f, 480.0f, 500.0f, 480.0f, volume);
 
-
-// Settings variables
+// Modif Settings Variables
 
 
 // -- Title Screen Functions --
@@ -230,6 +231,11 @@ void settingsDisplay() {
     renderText("Volume:", 80.0f, 475.0f);
     volumeSlider.display();
 
+    glColor3f(0.25f, 0.25f, 0.25f);
+    glRectf(80.0f, 400.0f, 230.0f, 440.0f);
+    glColor3f(1.0f, 1.0f, 1.0f);
+    renderText("Modif Settings", 83.0f, 410.0f);
+
     glutSwapBuffers();
 }
 
@@ -261,6 +267,10 @@ void settingsMouse(int button, int state, int x, int y) {
                 musicOn = true;
             }
         }
+        else if ((x >= 80) && (x <= 230) && (y >= 400) && (y <= 400)) {
+            setGameMode(MODE_MODIF_SETTINGS);
+            glutPostRedisplay();
+        }
         else if (volumeSlider.isWithinBounds(x,y)) {
             volume = volumeSlider.setHandle(x);
             SoundEngine->setSoundVolume(volume);
@@ -281,13 +291,33 @@ void modifSettingsInit() {
 void modifSettingsDisplay() {
     glClear(GL_COLOR_BUFFER_BIT);
 
+    renderText("Modifier Probability Settings:", 50, 580);
+
+    glColor3f(0.25f, 0.25f, 0.25f);
+    glRectf(890, 570, 960, 610);
+    glColor3f(1.0f, 1.0f, 1.0f);
+    renderText("Back", 900, 580);
+
     glutSwapBuffers();
 }
 
 void modifSettingsKeyboard(unsigned char key, int x, int y) {
-
+    keyboardDown[key] = true;
+    switch (key) {
+    case 27:
+        setGameMode(MODE_SETTINGS);
+        break;
+    }
+    glutPostRedisplay();
 }
 
 void modifSettingsMouse(int button, int state, int x, int y) {
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+        y = windowHeight - y;
 
+        if ((x >= 890) && (x <= 960) && (y >= 570) && (y <= 610)) {
+            setGameMode(MODE_SETTINGS);
+            glutPostRedisplay();
+        }
+    }
 }

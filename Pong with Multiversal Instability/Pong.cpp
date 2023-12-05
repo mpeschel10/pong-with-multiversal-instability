@@ -534,6 +534,11 @@ void setGameMode(int mode) {
         glutSpecialFunc(NULL);
         break;
     case MODE_MODIF_SETTINGS:
+        modifSettingsInit();
+        glutDisplayFunc(modifSettingsDisplay);
+        glutKeyboardFunc(modifSettingsKeyboard);
+        glutMouseFunc(modifSettingsMouse);
+        glutSpecialFunc(NULL);
         break;
     default:
         std::cerr << "Warning: setGameMode was called with invalid mode " << mode << std::endl;
