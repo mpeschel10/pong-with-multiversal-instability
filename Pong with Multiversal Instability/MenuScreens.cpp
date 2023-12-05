@@ -261,7 +261,7 @@ void settingsMouse(int button, int state, int x, int y) {
                 musicOn = true;
             }
         }
-        else if ((x >= 195) && (x <= 505) && (y >= 470) && (y <= 490)) {
+        else if (volumeSlider.isWithinBounds(x,y)) {
             volume = volumeSlider.setHandle(x);
             SoundEngine->setSoundVolume(volume);
             glutPostRedisplay();

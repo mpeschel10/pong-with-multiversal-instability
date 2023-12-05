@@ -4,6 +4,14 @@ public:
 	struct Point end;
 	float handle;
 
+	Slider() {
+		start.x = 0.0f;
+		start.y = 0.0f;
+		end.x = 0.0f;
+		end.y = 0.0f;
+		handle = 1.0f;
+	}
+
 	Slider(float sX, float sY, float eX, float eY, float initHandle = 1.0f) {
 		start.x = sX;
 		start.y = sY;
@@ -38,5 +46,9 @@ public:
 		Handle.x = (1 - handle) * start.x + handle * end.x;
 		Handle.y = (1 - handle) * start.y + handle * end.y;
 		return Handle;
+	}
+
+	bool isWithinBounds(float x, float y) {
+		return ((x >= (start.x - 5.0f)) && (x <= (end.x + 5.0f)) && (y >= (start.y - 10.0f)) && (y <= (end.y + 10.0f)));
 	}
 };
