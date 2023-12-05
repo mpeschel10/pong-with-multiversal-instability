@@ -53,6 +53,7 @@ TexturedRectangle board("textures/board.png");
 struct Paddle p1, p2;
 int activePaddleTexture = 0;
 
+int cooldown;
 int isAI = 2;
 
 TexturedRectangle* paddle_textures[] = {
@@ -219,20 +220,22 @@ void display() {
 
     board.display();
 
-    glColor3f(0.5f, 0.5f, 0.5f);
+    if (game_mode != MODE_WIN_PAUSE) {
+        glColor3f(0.5f, 0.5f, 0.5f);
 
-    if (modifier == MODIF_GAMER || modifier == MODIF_OMNI) {
-        glColor3f(rgb[0] / 200, rgb[1] / 200, rgb[2] / 200);
+        if (modifier == MODIF_GAMER || modifier == MODIF_OMNI) {
+            glColor3f(rgb[0] / 200, rgb[1] / 200, rgb[2] / 200);
+        }
+
+        glRectf((windowWidth / 2.0) - 5, ((windowHeight - 30) / 2.0) - 1, (windowWidth / 2.0) + 5, ((windowHeight - 30) / 2.0) + 1);
+        glRectf((windowWidth / 2.0) - 1, 1, (windowWidth / 2.0) + 1, windowHeight - 31);
+        glColor3f(1.0f, 1.0f, 1.0f);
+
+        if (modifier == MODIF_GAMER || modifier == MODIF_OMNI) {
+            glColor3f(rgb[0] / 100, rgb[1] / 100, rgb[2] / 100);
+        }
     }
-
-    glRectf((windowWidth / 2.0) - 5, ((windowHeight - 30) / 2.0) - 1, (windowWidth / 2.0) + 5, ((windowHeight - 30) / 2.0) + 1);
-    glRectf((windowWidth / 2.0) - 1, 1, (windowWidth / 2.0) + 1, windowHeight - 31);
-    glColor3f(1.0f, 1.0f, 1.0f);
-
-    if (modifier == MODIF_GAMER || modifier == MODIF_OMNI) {
-        glColor3f(rgb[0] / 100, rgb[1] / 100, rgb[2] / 100);
-    }
-
+    
     glBegin(GL_LINES); // Draw Play Area
 
     glVertex2i(1, 0);
@@ -332,6 +335,42 @@ void display() {
         renderText("PAUSED", (windowWidth / 2.0) - 47, (windowHeight / 2.0));
     }
 
+    if (game_mode == MODE_WIN_PAUSE) {
+
+        glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
+
+        if (modifier == MODIF_GAMER || modifier == MODIF_OMNI) {
+            glColor4f(rgb[0] / 100, rgb[1] / 100, rgb[2] / 100, 0.5f);
+        }
+
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        glLoadIdentity();
+        gluOrtho2D(0, windowWidth, 0, windowHeight); // Modified for the window size of our application
+
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glLoadIdentity();
+
+        glRectf((windowWidth / 2.0) - 55, (windowHeight / 2.0) + 40, (windowWidth / 2.0) + 55, (windowHeight / 2.0) - 25);
+
+        glMatrixMode(GL_MODELVIEW);
+        glPopMatrix();
+
+        glMatrixMode(GL_PROJECTION);
+        glPopMatrix();
+
+        if (cooldown > 120) {
+            renderText("3", (windowWidth / 2.0) - 6, (windowHeight / 2.0));
+        }
+        else if (cooldown > 60) {
+            renderText("2", (windowWidth / 2.0) - 6, (windowHeight / 2.0));
+        }
+        else if (cooldown > 0) {
+            renderText("1", (windowWidth / 2.0) - 6, (windowHeight / 2.0));
+        }
+    }
+
     glPopMatrix();
 
     glutSwapBuffers();
@@ -371,14 +410,6 @@ void reset() {
     lastFrameTime = -1;
     lastSecond = -1;
     glutPositionWindow(200, 100);
-}
-
-void timer(int _) {
-    if (game_mode == MODE_VS_AI || game_mode == MODE_VS_PLAYER || game_mode == MODE_AI_VS_AI) {
-        idle();
-    }
-
-    glutTimerFunc(millisecondsPerFrame, timer, _);
 }
 
 float squareDistance(int x, int y, Point p) {
@@ -456,6 +487,7 @@ void setGameMode(int mode) {
         lastFrameTime = -1;
         break;
     case MODE_WIN_PAUSE:
+        cooldown = 180;
         break;
     case MODE_SETTINGS:
         settingsInit();
@@ -811,7 +843,7 @@ void switchModifier(bool ran) {
         modifier = modifier % numModifiers;
     }
 
-    modifier = 13;
+    //modifier = 13;
 
     switch (modifier) {
     case MODIF_ROTATE:
@@ -856,9 +888,6 @@ void switchModifier(bool ran) {
         rotateAngle = 0.0;
         xScale = 1.0;
         yScale = 1.0;
-        if (isAI == 2) {
-            modifier = MODIF_NONE;
-        }
         windowPosX = glutGet((GLenum)GLUT_WINDOW_X);
         windowPosY = glutGet((GLenum)GLUT_WINDOW_Y);
         for (int i = 0; i < 3; i++) {
@@ -889,7 +918,7 @@ void idle() {
     updateDrag();
     updatePaddles();
 
-    if (modifier != MODIF_SUPER || (modifier == MODIF_SUPER && super) || modifier != MODIF_OMNI || (modifier == MODIF_OMNI && super)) {
+    if (modifier != MODIF_SUPER || (modifier == MODIF_SUPER && super)) {
         updateBall();
         super = false;
     }
@@ -900,6 +929,39 @@ void idle() {
     lastFrameTime = thisFrameTime;
 
     glutPostRedisplay();
+}
+
+void timer(int _) {
+    if (game_mode == MODE_VS_AI || game_mode == MODE_VS_PLAYER || game_mode == MODE_AI_VS_AI) {
+        idle();
+    }
+
+    if (game_mode == MODE_WIN_PAUSE) {
+        cooldown--;
+
+        if (cooldown == 0) {
+            reset();
+            switchModifier(true);
+            switch (isAI) {
+            case 0:
+                setGameMode(MODE_VS_PLAYER);
+                break;
+            case 1:
+                setGameMode(MODE_VS_AI);
+                break;
+            case 2:
+                setGameMode(MODE_AI_VS_AI);
+                break;
+            };
+
+            activeBallTexture = (activeBallTexture + 1) % size(ball_textures);
+            activePaddleTexture = (activePaddleTexture + 1) % size(paddle_textures);
+        }
+
+        glutPostRedisplay();
+    }
+
+    glutTimerFunc(millisecondsPerFrame, timer, _);
 }
 
 void keyboard(unsigned char key, int x, int y) {
