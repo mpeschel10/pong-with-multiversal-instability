@@ -648,6 +648,11 @@ void updateBall() {
     if (ballY + (ballDiameter / 2.0) >= windowHeight - 31) {
 
         ballSpeedY = -abs(ballSpeedY);
+
+        if (modifier == MODIF_PHONG) {
+            ballSpeedY *= rand() % 2 == 0 ? 0.65 : 1.35;
+        }
+
         speedUp += 1;
         if (speedUp % 3 == 0) {
             ballSpeedX *= 1.05;
@@ -659,6 +664,11 @@ void updateBall() {
     else if (ballY - (ballDiameter / 2.0) <= 0) {
 
         ballSpeedY = abs(ballSpeedY);
+
+        if (modifier == MODIF_PHONG) {
+            ballSpeedY *= rand() % 2 == 0 ? 0.65 : 1.35;
+        }
+
         speedUp += 1;
         if (speedUp % 3 == 0) {
             ballSpeedX *= 1.05;
@@ -673,6 +683,10 @@ void updateBall() {
         ballX = p1.x2;
         ballSpeedX = 0 - ballSpeedX;
         speedUp += 1;
+
+        if (modifier == MODIF_PHONG) {
+            ballSpeedX *= rand() % 2 == 0 ? 0.65 : 1.35;
+        }
 
         if (keyboardDown['e']) {
             ballSpeedX *= 2;
@@ -691,6 +705,10 @@ void updateBall() {
         ballX = p2.x1;
         ballSpeedX = 0 - ballSpeedX;
         speedUp += 1;
+
+        if (modifier == MODIF_PHONG) {
+            ballSpeedX *= rand() % 2 == 0 ? 0.65 : 1.35;
+        }
 
         if (specialDown[GLUT_KEY_LEFT]) {
             ballSpeedX *= 2;
@@ -898,7 +916,7 @@ void switchModifier(bool ran) {
         modifier = modifier % numModifiers;
     }
 
-    modifier = 14;
+    modifier = MODIF_PHONG;
 
     switch (modifier) {
     case MODIF_ROTATE:
