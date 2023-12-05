@@ -3,6 +3,8 @@ string PVP, PVE, EVE, SET;
 float titleAngle;
 float r, g, b, a;
 bool up, red, green, blue;
+bool musicOn = true;
+
 // Settings variables
 
 
@@ -215,6 +217,12 @@ void settingsDisplay() {
     glColor3f(1.0f, 1.0f, 1.0f);
     renderText("Back", 900, 580);
 
+    if(musicOn) { glColor3f(0.0f, 1.0f, 0.0f); }
+    else { glColor3f(1.0f, 0.0f, 0.0f);  }
+    glRectf(215, 500, 295, 525);
+    glColor3f(1.0f, 1.0f, 1.0f);
+    renderText("Mute Music: ", 80, 505);
+
     glutSwapBuffers();
 }
 
@@ -235,6 +243,16 @@ void settingsMouse(int button, int state, int x, int y) {
         if ((x >= 890) && (x <= 960) && (y >= 570) && (y <= 610)) {
             setGameMode(MODE_TITLE);
             glutPostRedisplay();
+        }
+        else if ((x >= 215) && (x <= 295) && (y >= 500) && (y <= 530)) {
+            if (musicOn) {
+                SoundEngine->stopAllSounds();
+                musicOn = false;
+            }
+            else {
+                SoundEngine->play2D("audio/bgm.wav", true);
+                musicOn = true;
+            }
         }
     }
 }

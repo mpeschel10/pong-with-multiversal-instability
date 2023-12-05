@@ -794,8 +794,8 @@ void updateModifier() {
             scaleAngle = 0.0;
         xScale = (cos(scaleAngle) / 4.0) + 0.75;
         yScale = (sin(scaleAngle) / 4.0) + 0.75;
-        windowPosX -= (ballX - xBefore);
-        windowPosY += (ballY - yBefore);
+        windowPosX -= (ballX - xBefore) * xScale;
+        windowPosY += (ballY - yBefore) * yScale;
         glutPositionWindow(windowPosX, windowPosY);
         same = true;
         for (int i = 0; i < 2; i++) {
