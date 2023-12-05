@@ -1,4 +1,3 @@
-
 class Slider {
 public:
 	struct Point start;
@@ -20,6 +19,7 @@ public:
 		glRectf(start.x - 2, start.y - 10, start.x, start.y + 10);
 		glRectf(end.x, end.y - 10, end.x + 2, end.y + 10);
 		glColor3f(1.0f, 1.0f, 1.0f);
+
 		float handleX = (1 - handle) * start.x + handle * end.x;
 		float handleY = (1 - handle) * start.y + handle * end.y;
 		glRectf(handleX - 2.0f, handleY - 8.0f, handleX + 2.0f, handleY + 8.0f);
@@ -31,5 +31,12 @@ public:
 		else if (x > end.x) { x = end.x; }
 		handle = ((x - start.x) / (end.x - start.x));
 		return handle;
+	}
+
+	Point getHandlePoint() {
+		struct Point Handle;
+		Handle.x = (1 - handle) * start.x + handle * end.x;
+		Handle.y = (1 - handle) * start.y + handle * end.y;
+		return Handle;
 	}
 };
