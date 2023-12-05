@@ -52,31 +52,35 @@ paddle_texture("textures/paddle.png"), sword_texture("textures/sword.png");
 TexturedRectangle board("textures/board.png");
 
 struct Paddle p1, p2;
-int activePaddleTexture = 0;
-
-int cooldown;
-int isAI = 2;
+const float paddleSpeed = 300; // in pixels per second
 
 TexturedRectangle* paddle_textures[] = {
     &barber_texture, &fries_texture, &paddle_texture, &sword_texture,
 };
-const float paddleSpeed = 300; // in pixels per second
+int activePaddleOneTexture = -1;
+int activePaddleTwoTexture = -1;
+
+float paddle_colors[10][3] = { {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.5f, 0.0f}, {1.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 0.0f},
+                                  { 0.0f, 0.0f, 1.0f }, {1.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 1.0f}, {0.5f, 0.5f, 0.5f}, {0.625f, 0.375f, 0.0f} };
+int activePaddleOneColor = -1;
+int activePaddleTwoColor = -1;
 
 // Ball
 float ballX, ballY, ballSpeedX, ballSpeedY;
 const float ballSpeed = 240; // in pixels per second
 int speedUp = 0;
 int boost = 0;
+const float ballDiameter = 20;
+const float ballRadius = ballDiameter / 2;
+int cooldown;
+int isAI = 2;
 
 // Note: The order of ball_textures is important!
 // Must match up with order of menu entries in initTextureMenu.
 TexturedRectangle* ball_textures[] = {
-
     &ping_pong_texture, &baseball_texture, &basketball_texture, &orange_texture
 };
-static int activeBallTexture = 0;
-const float ballDiameter = 20;
-const float ballRadius = ballDiameter / 2;
+static int activeBallTexture = -1;
 
 // Scoring
 int player1Score = 0;
@@ -95,7 +99,6 @@ void keyboard(unsigned char key, int x, int y);
 void special(int key, int x, int y);
 float squareDistance(int x, int y, Point p);
 
-
 // Modifiers
 int randAngle = rand() % 361;
 float rotateAngle = 0;
@@ -110,9 +113,7 @@ float rgb[] = { 100, 100, 100 };
 float goalRGB[3];
 vector<vector<float>> previousBallPositions;
 float flashAlpha;
-
 bool super = false;
-
 const float pegSize = 20;
 const int pegCount = 20;
 Peg pegs[pegCount];
@@ -308,20 +309,35 @@ void display() {
     glEnd();
 
     // Paddles
-    if (activePaddleTexture == -1)
-    {
+
+    if (activePaddleOneTexture == -1) {
+        glColor3f(paddle_colors[activePaddleOneColor + 1][0], paddle_colors[activePaddleOneColor + 1][1], paddle_colors[activePaddleOneColor + 1][2]);
         paddleDraw(p1);
+    }
+    else {
+        glColor3f(paddle_colors[activePaddleOneColor + 1][0], paddle_colors[activePaddleOneColor + 1][1], paddle_colors[activePaddleOneColor + 1][2]);
+        paddleDraw(p1, paddle_textures[activePaddleOneTexture]);
+    }
+
+    if (activePaddleTwoTexture == -1) {
+        glColor3f(paddle_colors[activePaddleTwoColor + 1][0], paddle_colors[activePaddleTwoColor + 1][1], paddle_colors[activePaddleTwoColor + 1][2]);
         paddleDraw(p2);
     }
     else {
-        paddleDraw(p1, paddle_textures[activePaddleTexture]);
-        paddleDraw(p2, paddle_textures[activePaddleTexture]);
+        glColor3f(paddle_colors[activePaddleTwoColor + 1][0], paddle_colors[activePaddleTwoColor + 1][1], paddle_colors[activePaddleTwoColor + 1][2]);
+        paddleDraw(p2, paddle_textures[activePaddleTwoTexture]);
     }
 
     // Paddle paths
     if (modifier == MODIF_BEZIER_FREE) {
         bezierDraw(p1.path);
         bezierDraw(p2.path);
+    }
+
+    glColor3f(1.0f, 1.0f, 1.0f);
+
+    if (modifier == MODIF_GAMER || modifier == MODIF_OMNI) {
+        glColor3f(rgb[0] / 100, rgb[1] / 100, rgb[2] / 100);
     }
 
     // Pongle pegs
@@ -963,7 +979,7 @@ void switchModifier(bool ran) {
         modifier = modifier % numModifiers;
     }
 
-    //modifier = MODIF_OMNI;
+    modifier = MODIF_NONE;
 
     switch (modifier) {
     case MODIF_ROTATE:
@@ -1177,8 +1193,23 @@ void onBallTextureMenu(int option) {
     glutPostRedisplay();
 }
 
-void onPaddleTextureMenu(int option) {
-    activePaddleTexture = option;
+void onPaddleOneTextureMenu(int option) {
+    activePaddleOneTexture = option;
+    glutPostRedisplay();
+}
+
+void onPaddleTwoTextureMenu(int option) {
+    activePaddleTwoTexture = option;
+    glutPostRedisplay();
+}
+
+void onPaddleOneColorMenu(int option) {
+    activePaddleOneColor = option;
+    glutPostRedisplay();
+}
+
+void onPaddleTwoColorMenu(int option) {
+    activePaddleTwoColor = option;
     glutPostRedisplay();
 }
 
@@ -1194,18 +1225,48 @@ void initTextureMenu(void) {
         glutAddMenuEntry(ballLabels[i], i - 1);
     }
 
-    GLuint paddleTextureMenuID = glutCreateMenu(onPaddleTextureMenu);
-    const char* paddleLabels[] = {
+    GLuint paddleOneTextureMenuID = glutCreateMenu(onPaddleOneTextureMenu);
+    const char* paddleOneLabels[] = {
         "None", "Barber Pole", "French Fry", "Paddles", "Swords"
     };
 
-    for (int i = 0; i < sizeof(paddleLabels) / sizeof(char*); i++) {
-        glutAddMenuEntry(paddleLabels[i], i - 1);
+    for (int i = 0; i < sizeof(paddleOneLabels) / sizeof(char*); i++) {
+        glutAddMenuEntry(paddleOneLabels[i], i - 1);
+    }
+
+    GLuint paddleTwoTextureMenuID = glutCreateMenu(onPaddleTwoTextureMenu);
+    const char* paddleTwoLabels[] = {
+        "None", "Barber Pole", "French Fry", "Paddles", "Swords"
+    };
+
+    for (int i = 0; i < sizeof(paddleTwoLabels) / sizeof(char*); i++) {
+        glutAddMenuEntry(paddleTwoLabels[i], i - 1);
+    }
+
+    GLuint paddleOneColorMenuID = glutCreateMenu(onPaddleOneColorMenu);
+    const char* paddleOneColorLabels[] = {
+        "White", "Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Cyan", "Gray", "Brown"
+    };
+
+    for (int i = 0; i < sizeof(paddleOneColorLabels) / sizeof(char*); i++) {
+        glutAddMenuEntry(paddleOneColorLabels[i], i - 1);
+    }
+
+    GLuint paddleTwoColorMenuID = glutCreateMenu(onPaddleTwoColorMenu);
+    const char* paddleTwoColorLabels[] = {
+        "White", "Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Cyan", "Gray", "Brown"
+    };
+
+    for (int i = 0; i < sizeof(paddleTwoColorLabels) / sizeof(char*); i++) {
+        glutAddMenuEntry(paddleTwoColorLabels[i], i - 1);
     }
 
     GLuint contextMenuID = glutCreateMenu(onContextMenu);
     glutAddSubMenu("Ball texture", ballTextureMenuID);
-    glutAddSubMenu("Paddle texture", paddleTextureMenuID);
+    glutAddSubMenu("Paddle one texture", paddleOneTextureMenuID);
+    glutAddSubMenu("Paddle two texture", paddleTwoTextureMenuID);
+    glutAddSubMenu("Paddle one color", paddleOneColorMenuID);
+    glutAddSubMenu("Paddle two color", paddleTwoColorMenuID);
     glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
