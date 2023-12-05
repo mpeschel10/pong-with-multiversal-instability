@@ -322,14 +322,14 @@ void modifSettingsKeyboard(unsigned char key, int x, int y) {
 
 void modifSettingsMouse(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-        y = windowHeight - y;
+        y = (windowHeight - scrollVal) - y;
 
         if ((x >= 890) && (x <= 960) && (y >= 570) && (y <= 610)) {
             setGameMode(MODE_SETTINGS);
-            for (int i = 0; i < numModifiers; i++) {
-                cout << modifProbs[i] << " ";
-            }
-            cout << endl;
+            //for (int i = 0; i < numModifiers; i++) {
+            //    cout << modifProbs[i] << " ";
+            //}
+            //cout << endl;
             glutPostRedisplay();
         }
         else {
@@ -340,22 +340,22 @@ void modifSettingsMouse(int button, int state, int x, int y) {
     }
     else if (state == GLUT_DOWN) {
         if (button == 3) { // Scroll Up
-            scrollVal -= 5.0f;
+            scrollVal -= 10.0f;
             if (scrollVal < 0.0f) scrollVal = 0.0f;
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
             gluOrtho2D(0, windowWidth, 0 - scrollVal, windowHeight - scrollVal);
             glMatrixMode(GL_MODELVIEW);
-            cout << "Scroll Up" << endl;
+            //cout << "Scroll Up" << endl;
             glutPostRedisplay();
         }
         else if (button == 4) { // Scroll Down
-            scrollVal += 5.0f;
+            scrollVal += 10.0f;
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
             gluOrtho2D(0, windowWidth, 0 - scrollVal, windowHeight - scrollVal);
             glMatrixMode(GL_MODELVIEW);
-            cout << "Scroll Down" << endl;
+            //cout << "Scroll Down" << endl;
             glutPostRedisplay();
         }
     }

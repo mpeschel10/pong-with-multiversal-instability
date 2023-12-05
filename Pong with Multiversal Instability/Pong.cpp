@@ -963,7 +963,7 @@ void switchModifier(bool ran) {
         modifier = modifier % numModifiers;
     }
 
-    modifier = MODIF_OMNI;
+    //modifier = MODIF_OMNI;
 
     switch (modifier) {
     case MODIF_ROTATE:
