@@ -979,8 +979,6 @@ void switchModifier(bool ran) {
         modifier = modifier % numModifiers;
     }
 
-    modifier = MODIF_NONE;
-
     switch (modifier) {
     case MODIF_ROTATE:
         rotateAngle = 0.0;
