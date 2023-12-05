@@ -19,15 +19,15 @@ public:
 		modifier = modif;
 		this->x = x;
 		this->y = y;
-		modifSlider.start.x = x + 150.0f;
-		modifSlider.start.y = y + 15.0f;
-		modifSlider.end.x = x + 350.0f;
-		modifSlider.end.y = y + 15.0f;
+		modifSlider.start.x = x + 200.0f;
+		modifSlider.start.y = y + 10.0f;
+		modifSlider.end.x = x + 400.0f;
+		modifSlider.end.y = y + 10.0f;
 		modifSlider.handle = modifProbs[modifier];
 	}
 
 	void display() {
-		renderText(descriptions[modifier], x, y);
+		renderTextWarpable(descriptions[modifier], x, y);
 		modifSlider.display();
 	}
 

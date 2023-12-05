@@ -10,7 +10,8 @@ float volume = 1.0f;
 Slider volumeSlider(200.0f, 480.0f, 500.0f, 480.0f, volume);
 
 // Modif Settings Variables
-
+modifMenuOption modifOptions[numModifiers];
+float scrollVal = 0.0f;
 
 // -- Title Screen Functions --
 
@@ -197,8 +198,6 @@ void titleIdle() {
 }
 
 // TODO (Zach): 
-    // Implement basic settings screen and modifier probability settings
-    // Settings screens has button to open modifer probability screen
     // Modifier probability screen displays the modifer name, a brief description, and a modifiable frequency number.
 
 // -- Settings Screen Functions --
@@ -267,7 +266,7 @@ void settingsMouse(int button, int state, int x, int y) {
                 musicOn = true;
             }
         }
-        else if ((x >= 80) && (x <= 230) && (y >= 400) && (y <= 400)) {
+        else if ((x >= 80) && (x <= 230) && (y >= 400) && (y <= 440)) {
             setGameMode(MODE_MODIF_SETTINGS);
             glutPostRedisplay();
         }
@@ -281,6 +280,12 @@ void settingsMouse(int button, int state, int x, int y) {
 
 // -- Modifier Settings Screen Functions -- 
 
+void modifOptionInit() {
+    for (int i = 0; i < numModifiers; i++) {
+        modifOptions[i] = modifMenuOption(i, 80.0f, 525.0f - (50.0f * i));
+    }
+}
+
 void modifSettingsInit() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -291,12 +296,16 @@ void modifSettingsInit() {
 void modifSettingsDisplay() {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    renderText("Modifier Probability Settings:", 50, 580);
+    renderTextWarpable("Modifier Probability Settings", 50, 580);
 
     glColor3f(0.25f, 0.25f, 0.25f);
     glRectf(890, 570, 960, 610);
     glColor3f(1.0f, 1.0f, 1.0f);
-    renderText("Back", 900, 580);
+    renderTextWarpable("Back", 900, 580);
+
+    for (int i = 0; i < numModifiers; i++) {
+        modifOptions[i].display();
+    }
 
     glutSwapBuffers();
 }
@@ -317,7 +326,46 @@ void modifSettingsMouse(int button, int state, int x, int y) {
 
         if ((x >= 890) && (x <= 960) && (y >= 570) && (y <= 610)) {
             setGameMode(MODE_SETTINGS);
+            for (int i = 0; i < numModifiers; i++) {
+                cout << modifProbs[i] << " ";
+            }
+            cout << endl;
+            glutPostRedisplay();
+        }
+        else {
+            for (int i = 0; i < numModifiers; i++) {
+                modifOptions[i].changeProb(x, y);
+            }
+        }
+    }
+    else if (state == GLUT_DOWN) {
+        if (button == 3) { // Scroll Up
+            scrollVal -= 5.0f;
+            if (scrollVal < 0.0f) scrollVal = 0.0f;
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            gluOrtho2D(0, windowWidth, 0 - scrollVal, windowHeight - scrollVal);
+            glMatrixMode(GL_MODELVIEW);
+            cout << "Scroll Up" << endl;
+            glutPostRedisplay();
+        }
+        else if (button == 4) { // Scroll Down
+            scrollVal += 5.0f;
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            gluOrtho2D(0, windowWidth, 0 - scrollVal, windowHeight - scrollVal);
+            glMatrixMode(GL_MODELVIEW);
+            cout << "Scroll Down" << endl;
             glutPostRedisplay();
         }
     }
 }
+
+/*void modifSettingsScroll(int button, int dir, int x, int y) {
+    if (dir > 0) {
+
+    }
+    else {
+
+    }
+}*/

@@ -87,6 +87,7 @@ int player2Score = 0;
 void idle();
 void renderText(const string& text, float x, float y);
 void renderText(const string& text, float x, float y, float r, float g, float b);
+void renderTextWarpable(const string& text, float x, float y);
 void setGameMode(int mode);
 void init();
 void display();
@@ -218,6 +219,21 @@ void renderText(const string& text, float x, float y, float r, float g, float b)
 
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
+}
+
+void renderTextWarpable(const string& text, float x, float y) {
+    glColor3f(1.0f, 1.0f, 1.0f); // Text Color: White
+
+    if (modifier == MODIF_GAMER) {
+        glColor3f(rgb[0] / 100, rgb[1] / 100, rgb[2] / 100);
+    }
+
+    glRasterPos2f(x, y);
+
+    // Loop through the characters in the text and render them one by one
+    for (const char& character : text) {
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, character);
+    }
 }
 
 long now() {
@@ -871,8 +887,24 @@ void updateModifier() {
 void switchModifier(bool ran) {
     int oldModif = modifier;
     float randVal;
+    float sumProbs = 0;
+    float probs[numModifiers];
     if (ran) {
-        modifier = rand() % numModifiers;
+        for (int i = 0; i < numModifiers; i++) {
+            sumProbs += modifProbs[i]; // Calculate probability sum
+        }
+        for (int i = 0; i < numModifiers; i++) {
+            probs[i] = modifProbs[i] / sumProbs; // Normalize probabiltiies
+        }
+        for (int i = 1; i < numModifiers; i++) {
+            probs[i] = probs[i] + probs[i - 1]; // Determine cummulative probabilities
+        }
+        randVal = randomFloat();
+        modifier = 0;
+        for (int i = 1; i < numModifiers; i++) {
+            if (randVal > probs[i - 1] && randVal <= probs[i]) { modifier = i; }
+        }
+        //modifier = rand() % numModifiers;
         if (modifier == oldModif) {
             modifier++;
             modifier %= numModifiers;
@@ -1143,6 +1175,7 @@ int main(int argc, char** argv)
     glutDisplayFunc(titleDisplay);
     glutKeyboardFunc(titleKeyboard);
     glutIdleFunc(titleIdle);
+    modifOptionInit();
 
     glutSpecialUpFunc(specialUp);
     glutKeyboardUpFunc(keyboardUp);
