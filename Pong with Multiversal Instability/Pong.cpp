@@ -373,8 +373,23 @@ void display() {
         if (modifier == MODIF_GAMER || modifier == MODIF_OMNI) {
             glColor4f(rgb[0] / 100, rgb[1] / 100, rgb[2] / 100, 0.5f);
         }
+        
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        glLoadIdentity();
+        gluOrtho2D(0, windowWidth, 0, windowHeight);
+
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glLoadIdentity();
 
         glRectf((windowWidth / 2.0) - 55, (windowHeight / 2.0) + 40, (windowWidth / 2.0) + 55, (windowHeight / 2.0) - 25);
+
+        glMatrixMode(GL_MODELVIEW);
+        glPopMatrix();
+
+        glMatrixMode(GL_PROJECTION);
+        glPopMatrix();
 
         renderText("PAUSED", (windowWidth / 2.0) - 47, (windowHeight / 2.0));
     }
@@ -390,7 +405,7 @@ void display() {
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
         glLoadIdentity();
-        gluOrtho2D(0, windowWidth, 0, windowHeight); // Modified for the window size of our application
+        gluOrtho2D(0, windowWidth, 0, windowHeight);
 
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
@@ -916,7 +931,7 @@ void switchModifier(bool ran) {
         modifier = modifier % numModifiers;
     }
 
-    modifier = MODIF_PHONG;
+    modifier = MODIF_OMNI;
 
     switch (modifier) {
     case MODIF_ROTATE:
