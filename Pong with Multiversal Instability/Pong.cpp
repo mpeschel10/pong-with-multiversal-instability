@@ -64,6 +64,7 @@ const float paddleSpeed = 300; // in pixels per second
 float ballX, ballY, ballSpeedX, ballSpeedY;
 const float ballSpeed = 240; // in pixels per second
 int speedUp = 0;
+int boost = 0;
 
 // Note: The order of ball_textures is important!
 // Must match up with order of menu entries in initTextureMenu.
@@ -314,6 +315,18 @@ void display() {
         std::cout.flush();
         frameCount = 0;
         lastSecond = now();
+    }
+
+    if (game_mode == MODE_PAUSE) {
+        glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
+
+        if (modifier == MODIF_GAMER) {
+            glColor4f(rgb[0] / 100, rgb[1] / 100, rgb[2] / 100, 0.5f);
+        }
+
+        glRectf((windowWidth / 2.0) - 55, (windowHeight / 2.0) + 40, (windowWidth / 2.0) + 55, (windowHeight / 2.0) - 25);
+
+        renderText("PAUSED", (windowWidth / 2.0) - 47, (windowHeight / 2.0));
     }
     
     glPopMatrix();
@@ -575,6 +588,13 @@ void updateBall() {
         ballX = p1.x2;
         ballSpeedX = 0 - ballSpeedX;
         speedUp += 1;
+
+        if (keyboardDown['e']) {
+            ballSpeedX *= 2;
+            ballSpeedY *= 2;
+            boost = 50;
+        }
+
         if (speedUp % 3 == 0) {
             ballSpeedX *= 1.05;
             ballSpeedY *= 1.05;
@@ -586,6 +606,13 @@ void updateBall() {
         ballX = p2.x1;
         ballSpeedX = 0 - ballSpeedX;
         speedUp += 1;
+
+        if (specialDown[GLUT_KEY_LEFT]) {
+            ballSpeedX *= 2;
+            ballSpeedY *= 2;
+            boost = 50;
+        }
+
         if (speedUp % 3 == 0) {
             ballSpeedX *= 1.05;
             ballSpeedY *= 1.05;
@@ -620,6 +647,17 @@ void updateBall() {
         yBefore = ballY;
         ballX += ballSpeedX * deltaTime;
         ballY += ballSpeedY * deltaTime;
+    }
+
+    cout << boost;
+    if (boost > 0) {
+        boost--;
+        cout << boost;
+
+        if (boost == 0) {
+            ballSpeedX /= 2;
+            ballSpeedY /= 2;
+        }
     }
 }
 
