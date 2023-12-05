@@ -149,7 +149,7 @@ static int modifier = MODIF_NONE;
 const int numModifiers = 15;
 string descriptions[numModifiers] = { "No Modifier", "Rotate Pong", "Tilt Pong", "SUPERPONG", "Scale Pong", "Woozy Pong",
                                       "Dizzy Pong", "Stable Pong", "Bezier Pong", "Pongle", "Gamer Pong", "Phong", "Snong", "OMNIPONG", "Flash Pong"};
-float modifProbs[numModifiers] = { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
+float modifProbs[numModifiers] = { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
 
 // Track what keys are down for smooth updates.
 bool keyboardDown[255] = {}; // To check for 'a' key, do keyboardDown['a']. Single quote characters are ints in C++
