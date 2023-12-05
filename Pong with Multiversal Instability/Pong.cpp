@@ -108,6 +108,7 @@ float yBefore = 0.0;
 float rgb[] = { 100, 100, 100 };
 float goalRGB[3];
 vector<vector<float>> previousBallPositions;
+float flashAlpha;
 
 bool super = false;
 
@@ -142,10 +143,11 @@ static int game_mode = MODE_TITLE;
 #define MODIF_PHONG 11
 #define MODIF_SNONG 12
 #define MODIF_OMNI 13
+#define MODIF_FLASH 14
 static int modifier = MODIF_NONE;
-const int numModifiers = 14;
+const int numModifiers = 15;
 string descriptions[numModifiers] = { "No Modifier", "Rotate Pong", "Tilt Pong", "SUPERPONG", "Scale Pong", "Woozy Pong",
-                                      "Dizzy Pong", "Stable Pong", "Bezier Pong", "Pongle", "Gamer Pong", "Phong", "Snong", "OMNIPONG" };
+                                      "Dizzy Pong", "Stable Pong", "Bezier Pong", "Pongle", "Gamer Pong", "Phong", "Snong", "OMNIPONG", "Flash Pong"};
 float modifProbs[numModifiers] = { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
 
 // Track what keys are down for smooth updates.
@@ -340,6 +342,11 @@ void display() {
         if (previousBallPositions.size() >= speedUp + 1) {
             previousBallPositions.resize(speedUp + 1);
         }
+    }
+
+    if (modifier == MODIF_FLASH) {
+        glColor4f(0.0f, 0.0f, 0.0f, flashAlpha);
+        glRectf(1, 0, windowWidth - 1, windowHeight - 31);
     }
 
     // Render Score
@@ -829,6 +836,12 @@ void updateModifier() {
         vec.push_back(ballY);
         previousBallPositions.insert(previousBallPositions.begin(), vec);
         break;
+    case MODIF_FLASH:
+        flashAlpha += 0.005f;
+        if (flashAlpha > 1) {
+            flashAlpha = 0.0f;
+        }
+        break;
     case MODIF_OMNI:
         rotateAngle += 0.1;
         scaleAngle += 0.025;
@@ -885,7 +898,7 @@ void switchModifier(bool ran) {
         modifier = modifier % numModifiers;
     }
 
-    //modifier = 13;
+    modifier = 14;
 
     switch (modifier) {
     case MODIF_ROTATE:
@@ -925,6 +938,9 @@ void switchModifier(bool ran) {
         break;
     case MODIF_SNONG:
         previousBallPositions.clear();
+        break;
+    case MODIF_FLASH:
+        flashAlpha = 0.0f;
         break;
     case MODIF_OMNI:
         rotateAngle = 0.0;
